@@ -1,6 +1,6 @@
 "use strict";
 module.exports = (sequelize, DataTypes) => {
-	const market = sequelize.define("Tag", {
+	const tag = sequelize.define("Tag", {
         tag_id: {
 			type: DataTypes.STRING,
 			unique: true,

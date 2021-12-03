@@ -1,6 +1,6 @@
 "use strict";
 module.exports = (sequelize, DataTypes) => {
-	const market = sequelize.define("User", {
+	const user = sequelize.define("User", {
         user_id: {
 			type: DataTypes.INTEGER,
 			unique: true,
