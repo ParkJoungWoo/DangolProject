@@ -38,6 +38,16 @@ app.post("/upup", (req, res) => {
 	
 	
 });
+app.get("/give", (req, res) => {
+	model.Market.findAll({
+		where:{
+		id: 1
+		}
+	}).then(result => { return req.body[0];
+	}).catch(err => {
+		console.log(err);
+	});
+});
 app.get("/test2", (req, res) => {
 	//	console.log(req.body);
 	    console.log("아닙니다.");
