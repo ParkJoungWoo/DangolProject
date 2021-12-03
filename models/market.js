@@ -52,6 +52,10 @@ module.exports = (sequelize, DataTypes) => {
 			type: DataTypes.JSON,
 			allowNull: true,
 		},
+		image: {
+			type: DataTypes.STRING,
+			allowNull: false
+		}
 	}, {
 		underscored: true,
 		freezeTableName: true,
