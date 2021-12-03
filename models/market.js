@@ -16,6 +16,10 @@ module.exports = (sequelize, DataTypes) => {
 			type: DataTypes.INTEGER,
 			allowNull: false
 		},
+		foodtag: {
+			type: DataTypes.STRING,
+			allowNull: false
+		},
 		local: {
 			type: DataTypes.JSON,
 			allowNull: true,

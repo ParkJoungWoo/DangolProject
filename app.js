@@ -22,6 +22,7 @@ app.post("/upup", (req, res) => {
 	model.Market.create({
 	"id": req.body[i].id,
 	"name": req.body[i].name,
+	"foodtag": req.body[i].foodtag,
 	"likenum": req.body[i].likenum,
 	"local": req.body[i].local,
 	"seatnum": req.body[i].seatnum,
