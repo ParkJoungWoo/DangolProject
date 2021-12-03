@@ -16,7 +16,7 @@ app.post("/upup", (req, res) => {
 	//const bodyObject = JSON.parse(req.body);
 	//console.log(bodyObject);
 	//console.log(req.body[0]);
-	console.log(req.body[0].name);
+	console.log(req.body[0].mood);
 	
 	for (let i = 0; i < req.body.length; i++)
 	model.Market.create({
@@ -31,7 +31,8 @@ app.post("/upup", (req, res) => {
 	"M_4": req.body[i].M_4,
 	"categ": req.body[i].categ,
 	"mood": req.body[i].mood,
-	"weather": req.body[i].weather
+	"weather": req.body[i].weather,
+	"image": req.body[i].image
 	});
 	
 	
