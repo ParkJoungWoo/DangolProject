@@ -16,15 +16,22 @@ app.post("/upup", (req, res) => {
 	//const bodyObject = JSON.parse(req.body);
 	//console.log(bodyObject);
 	//console.log(req.body[0]);
-	console.log(req.body[0].tag);
+	console.log(req.body[0].name);
 	
 	for (let i = 0; i < req.body.length; i++)
 	model.Market.create({
 	"id": req.body[i].id,
 	"name": req.body[i].name,
-	"star": req.body[i].star,
-	"tag": req.body[i].tag,
-	"number": req.body[i].number
+	"likenum": req.body[i].likenum,
+	"local": req.body[i].local,
+	"seatnum": req.body[i].seatnum,
+	"M_1": req.body[i].M_1,
+	"M_2": req.body[i].M_2,
+	"M_3": req.body[i].M_3,
+	"M_4": req.body[i].M_4,
+	"categ": req.body[i].categ,
+	"mood": req.body[i].mood,
+	"weather": req.body[i].weather
 	});
 	
 	
