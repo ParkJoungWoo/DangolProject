@@ -43,10 +43,13 @@ app.get("/give", (req, res) => {
 		where:{
 		id: 1
 		}
-	}).then(result => { return req.body[0];
+	}).then(result => { 
+		res.send(req.body[0]);
+		return req.body[0];
 	}).catch(err => {
 		console.log(err);
 	});
+	
 });
 app.get("/test2", (req, res) => {
 	//	console.log(req.body);
