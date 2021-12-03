@@ -25,19 +25,19 @@ module.exports = (sequelize, DataTypes) => {
 			allowNull: false
 		},
 		M_1: {
-			type: DataTypes.BOOL,
+			type: DataTypes.BOOLEAN,
 			allowNull: false,
 		},
 		M_2: {
-			type: DataTypes.BOOL,
+			type: DataTypes.BOOLEAN,
 			allowNull: false,
 		},
 		M_3: {
-			type: DataTypes.BOOL,
+			type: DataTypes.BOOLEAN,
 			allowNull: false,
 		},
 		M_4: {
-			type: DataTypes.BOOL,
+			type: DataTypes.BOOLEAN,
 			allowNull: false,
 		},
 		categ: {
