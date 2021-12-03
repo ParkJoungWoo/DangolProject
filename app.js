@@ -77,6 +77,7 @@ app.post("/star", (req, res) => {
 	where: {id : bodyObject.id}
 	});
 });
+
 app.post("/star2", (req, res) => {
 	        //const bodyObject = JSON.parse(req.body);
 	const bodyObject = req.body;
