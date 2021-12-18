@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
 			type: DataTypes.INTEGER,
 			allowNull: false
 		},
-		foodtag: {
+		categ: {
 			type: DataTypes.STRING,
 			allowNull: false
 		},
@@ -44,7 +44,7 @@ module.exports = (sequelize, DataTypes) => {
 			type: DataTypes.BOOLEAN,
 			allowNull: false,
 		},
-		categ: {
+		foodtag: {
 			type: DataTypes.JSON,
 			allowNull: false,
 		},

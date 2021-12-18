@@ -22,7 +22,7 @@ app.post("/upup", (req, res) => {
 	model.Market.create({
 	"id": req.body[i].id,
 	"name": req.body[i].name,
-	"foodtag": req.body[i].foodtag,
+	"categ": req.body[i].categ,
 	"likenum": req.body[i].likenum,
 	"local": req.body[i].local,
 	"seatnum": req.body[i].seatnum,
@@ -30,24 +30,26 @@ app.post("/upup", (req, res) => {
 	"M_2": req.body[i].M_2,
 	"M_3": req.body[i].M_3,
 	"M_4": req.body[i].M_4,
-	"categ": req.body[i].categ,
+	"foodtag": req.body[i].foodtag,
 	"mood": req.body[i].mood,
 	"weather": req.body[i].weather,
 	"image": req.body[i].image
 	});
 });
-// app.get("/give", (req, res) => {
-// 	model.Market.findAll({
-// 		where:{
-// 		id: 1
-// 		}
-// 	}).then(result => { 
-// 		res.send(req.body[0]);
-// 		return req.body[0];
-// 	}).catch(err => {
-// 		console.log(err);
-// 	});
-// });
+
+app.get("/give", (req, res) => {
+	model.Market.findAll({
+		where:{
+		id: 1
+		}
+	}).then(result => { 
+		res.send(req.body[0]);
+		return req.body[0];
+	}).catch(err => {
+		console.log(err);
+	});
+});
+
 app.get("/gettest", (req, res) => {
 	res.send("give one");
 });
