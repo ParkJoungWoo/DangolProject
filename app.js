@@ -35,9 +35,7 @@ app.post("/upup", (req, res) => {
 	"weather": req.body[i].weather,
 	"image": req.body[i].image
 	});
-	
-	
-// });
+});
 // app.get("/give", (req, res) => {
 // 	model.Market.findAll({
 // 		where:{
