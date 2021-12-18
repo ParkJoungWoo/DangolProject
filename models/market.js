@@ -50,7 +50,7 @@ module.exports = (sequelize, DataTypes) => {
 		},
 		mood: {
 			type: DataTypes.JSON,
-			allowNull: false,
+			allowNull: true,
 		},
 		weather: {
 			type: DataTypes.JSON,

@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => {
 			unique: true,
 			allowNull: false,
 			primaryKey: true,
-			autoIncrement: true
+			autoIncrement: false
 		},
         market_list: {
 			type: DataTypes.JSON,

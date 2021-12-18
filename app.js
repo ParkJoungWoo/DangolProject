@@ -43,8 +43,8 @@ app.get("/give", (req, res) => {
 		id: 1
 		}
 	}).then(result => { 
-		res.send(req.body[0]);
-		return req.body[0];
+		res.send(req.body);
+		return req.body;
 	}).catch(err => {
 		console.log(err);
 	});
