@@ -1,6 +1,6 @@
 "use strict";
-const app = express();
 const express = require("express");
+const app = express();
 const model = require("./models");
 const sequelize = require("./models").sequelize;
 const cors = require('cors');
