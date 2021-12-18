@@ -5,7 +5,7 @@ const cors = require('cors');
 // const sequelize = require("./models").sequelize;
 // const model = require("./models");
 
-sequelize.sync();
+//sequelize.sync();
 
 let test = []
 app.use(express.static(`${__dirname}/src`));
