@@ -36,9 +36,7 @@ app.post("/fetch", (req, res) => {
 
 app.get("/giveAll", (req, res) => {
 	model.Market.findAll({
-		where:{
-		id: 1
-		}
+		where:{}
 	}).then(result => { 
 		res.send(req.body);
 		return req.body;
@@ -51,7 +49,7 @@ app.get("/give:number", (req, res) => {
 	let number = req.params.number;
 	model.Market.findAll({
 		where:{
-		id: number
+			id: number
 		}
 	}).then(result => { 
 		res.json(req.body);
