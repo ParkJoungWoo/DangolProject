@@ -49,7 +49,9 @@ app.get("/give", (req, res) => {
 	}).catch(err => {
 		console.log(err);
 	});
-	
+});
+app.get("/gettest", (req, res) => {
+	res.send("give one");
 });
 app.get("/test2", (req, res) => {
 	//	console.log(req.body);
@@ -77,7 +79,6 @@ app.post("/test", (req, res) => {
 //	res.send("안녕하세요");
 	
 });
-
 app.get("/star", (req, res) => {
 	const bodyObject = JSON.parse(req.body);
 	model.Market.findAll({
@@ -89,7 +90,6 @@ app.get("/star", (req, res) => {
 		console.log(err);
 	});
 });
-
 app.post("/star", (req, res) => {
 	const bodyObject = JSON.parse(req.body);
 	model.Market.update({
@@ -99,7 +99,6 @@ app.post("/star", (req, res) => {
 	where: {id : bodyObject.id}
 	});
 });
-
 app.post("/star2", (req, res) => {
 	        //const bodyObject = JSON.parse(req.body);
 	const bodyObject = req.body;
