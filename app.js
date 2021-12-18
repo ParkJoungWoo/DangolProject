@@ -39,7 +39,7 @@ app.post("/upup", (req, res) => {
 	
 });
 app.get("/give", (req, res) => {
-	let result;
+	let result = 
 	model.Market.findAll({
 		where:{
 		id: 1
