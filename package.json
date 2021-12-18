@@ -3,13 +3,35 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "mysql2": "^2.3.0",
+    "nodejs": "^0.0.0",
     "nodemonitor": "^0.0.1",
-    "sequelize": "^6.6.5"
+    "sequelize": "^6.12.0",
+    "sequelize-cli": "^6.3.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.12"
   },
   "scripts": {
     "start": "nodemon ./bin/www.js"
-  }
+  },
+  "name": "starthalf",
+  "version": "1.0.0",
+  "main": "app.js",
+  "bin": {
+    "starthalf": "bin/www.js"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://ParkJoungWoo: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@github.com/ParkJoungWoo/Startishalf.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ParkJoungWoo/Startishalf/issues"
+  },
+  "homepage": "https://github.com/ParkJoungWoo/Startishalf#readme",
+  "description": ""
 }
