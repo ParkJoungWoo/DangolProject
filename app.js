@@ -52,8 +52,8 @@ app.get("/give:number", (req, res) => {
 			id: number
 		}
 	}).then(result => { 
-		res.json(req.body);
-		return req.body;
+		res.json(result);
+		return result;
 	}).catch(err => {
 		console.log(err);
 	});
