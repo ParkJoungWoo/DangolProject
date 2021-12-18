@@ -50,6 +50,20 @@ app.get("/give", (req, res) => {
 	});
 });
 
+app.get("/give:number", (req, res) => {
+	let number = req.params.number;
+	model.Market.findAll({
+		where:{
+		id: number
+		}
+	}).then(result => { 
+		res.send(req.body);
+		return req.body;
+	}).catch(err => {
+		console.log(err);
+	});
+});
+
 app.get("/gettest", (req, res) => {
 	res.send("give one");
 });
