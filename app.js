@@ -1,9 +1,9 @@
 "use strict";
-const express = require("express");
 const app = express();
-const cors = require('cors');
-const sequelize = require("./models").sequelize;
+const express = require("express");
 const model = require("./models");
+const sequelize = require("./models").sequelize;
+const cors = require('cors');
 
 sequelize.sync();
 
@@ -12,10 +12,7 @@ app.use(express.static(`${__dirname}/src`));
 app.use(express.json());
 app.use(cors());
 
-app.post("/upup", (req, res) => {
-	//const bodyObject = JSON.parse(req.body);
-	//console.log(bodyObject);
-	//console.log(req.body[0]);
+app.post("/fetch", (req, res) => {
 	console.log(req.body[0].mood);
 	
 	for (let i = 0; i < req.body.length; i++)
@@ -37,7 +34,7 @@ app.post("/upup", (req, res) => {
 	});
 });
 
-app.get("/give", (req, res) => {
+app.get("/giveAll", (req, res) => {
 	model.Market.findAll({
 		where:{
 		id: 1
@@ -57,7 +54,7 @@ app.get("/give:number", (req, res) => {
 		id: number
 		}
 	}).then(result => { 
-		res.send(req.body);
+		res.json(req.body);
 		return req.body;
 	}).catch(err => {
 		console.log(err);
