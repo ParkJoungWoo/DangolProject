@@ -38,8 +38,8 @@ app.get("/giveAll", (req, res) => {
 	model.Market.findAll({
 		where:{}
 	}).then(result => { 
-		res.send(req.body);
-		return req.body;
+		res.send(result);
+		return result;
 	}).catch(err => {
 		console.log(err);
 	});
@@ -59,6 +59,7 @@ app.get("/give:number", (req, res) => {
 	});
 });
 
+app.post
 app.get("/gettest", (req, res) => {
 	res.send("give one");
 });
