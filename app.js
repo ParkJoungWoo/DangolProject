@@ -32,7 +32,7 @@ app.post("/fetchMarket", (req, res) => {
 			"image": req.body[i].image
 		});
 });
-
+//좋아요 개수
 app.put("/heart:market_id/:number", (req, res) => {
 	let market_id = req.params.market_id;
 	let number = req.params.number;
@@ -49,7 +49,7 @@ app.put("/heart:market_id/:number", (req, res) => {
 		console.log(err);
 	});
 });
-
+//식당 DB 모두 전송
 app.get("/giveAll", (req, res) => {
 	model.Market.findAll({
 		where: {}
@@ -60,7 +60,7 @@ app.get("/giveAll", (req, res) => {
 		console.log(err);
 	});
 });
-
+//식당 DB 일부 전송
 app.get("/give:number", (req, res) => {
 	let number = req.params.number;
 	model.Market.findAll({
