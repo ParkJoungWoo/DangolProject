@@ -24,6 +24,10 @@ module.exports = (sequelize, DataTypes) => {
 			type: DataTypes.JSON,
 			allowNull: true,
 		},
+		address: {
+			type: DataTypes.STRING,
+			allowNull: true,
+		},
 		seatnum: {
 			type: DataTypes.INTEGER,
 			allowNull: false
