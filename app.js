@@ -12,7 +12,8 @@ app.use(express.static(`${__dirname}/src`));
 app.use(express.json());
 app.use(cors());
 
-app.post("/fetch", (req, res) => {
+//Market
+app.post("/fetchMarket", (req, res) => {
 	console.log(req.body[0].mood);
 	
 	for (let i = 0; i < req.body.length; i++)
@@ -59,6 +60,7 @@ app.get("/give:number", (req, res) => {
 	});
 });
 
+//User
 app.post
 app.get("/gettest", (req, res) => {
 	res.send("give one");
