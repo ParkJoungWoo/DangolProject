@@ -33,11 +33,11 @@ app.post("/fetchMarket", (req, res) => {
 		});
 });
 
-app.post("/heart:market_id/:number", (req, res) => {
+app.put("/heart:market_id/:number", (req, res) => {
 	let market_id = req.params.market_id;
 	let number = req.params.number;
 	model.Market.update({
-		heart: number
+		likenum: number
 	}, {
 		where: {
 			id: market_id
