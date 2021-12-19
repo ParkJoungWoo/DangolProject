@@ -29,20 +29,20 @@ module.exports = (sequelize, DataTypes) => {
 			allowNull: false
 		},
 		M_1: {
-			type: DataTypes.BOOLEAN,
-			allowNull: false,
+			type: DataTypes.INTEGER,
+			allowNull: true
 		},
 		M_2: {
-			type: DataTypes.BOOLEAN,
-			allowNull: false,
+			type: DataTypes.INTEGER,
+			allowNull: true
 		},
 		M_3: {
-			type: DataTypes.BOOLEAN,
-			allowNull: false,
+			type: DataTypes.INTEGER,
+			allowNull: true
 		},
 		M_4: {
-			type: DataTypes.BOOLEAN,
-			allowNull: false,
+			type: DataTypes.INTEGER,
+			allowNull: true
 		},
 		foodtag: {
 			type: DataTypes.JSON,
