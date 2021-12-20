@@ -19,11 +19,6 @@ module.exports = (sequelize, DataTypes) => {
 			allowNull: false,
 			autoIncrement: false
 		},
-        avg_star: {
-			type: DataTypes.INTEGER,
-			allowNull: true,
-			autoIncrement: false
-		},
         star_num: {
 			type: DataTypes.INTEGER,
 			allowNull: false,

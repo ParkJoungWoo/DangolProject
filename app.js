@@ -7,12 +7,12 @@ const cors = require('cors');
 
 sequelize.sync();
 
-let test = []
 app.use(express.static(`${__dirname}/src`));
 app.use(express.json());
 app.use(cors());
 
 //Market
+//새로운 식당 입력
 app.post("/fetchMarket", (req, res) => {
 	for (let i = 0; i < req.body.length; i++)
 		model.Market.create({
@@ -32,7 +32,7 @@ app.post("/fetchMarket", (req, res) => {
 			"image": req.body[i].image
 		});
 });
-//좋아요 개수
+//좋아요 개수 수정
 app.put("/heart:market_id/:number", (req, res) => {
 	let market_id = req.params.market_id;
 	let number = req.params.number;
@@ -74,9 +74,15 @@ app.get("/give:number", (req, res) => {
 		console.log(err);
 	});
 });
-
-//User
-app.post
+//Review
+app.post("/fetchReview", (req, res) => {
+	model.Review.create({
+		"market_id": req.body.market_id,
+		"user_id": req.body.user_id,
+		"star_num": req.body.star_num,
+		"content": req.body.content
+	});
+});
 app.get("/gettest", (req, res) => {
 	res.send("give one");
 });
