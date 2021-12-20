@@ -97,7 +97,8 @@ app.get("/reviewAll", (req, res) => {
 });
 //리뷰 DB 일부 전송
 app.get("/review:user_id/:market_id", (req, res) => {
-	let number = req.params.number;
+	let user_id = req.params.user_id;
+	let market_id = req.params.market_id;
 	model.Review.findAll({
 		where: {
 			"user_id": user_id,
