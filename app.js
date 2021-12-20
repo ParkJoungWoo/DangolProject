@@ -77,11 +77,12 @@ app.get("/market:number", (req, res) => {
 //Review
 //리뷰 입력
 app.post("/fetchReview", (req, res) => {
+	for (let i = 0; i < req.body.length; i++)
 	model.Review.create({
-		"market_id": req.body.market_id,
-		"user_id": req.body.user_id,
-		"star_num": req.body.star_num,
-		"content": req.body.content
+		"market_id": req.body[i].market_id,
+		"user_id": req.body[i].user_id,
+		"star_num": req.body[i].star_num,
+		"content": req.body[i].content
 	});
 });
 //리뷰 DB 모두 전송
@@ -111,7 +112,20 @@ app.get("/review:user_id/:market_id", (req, res) => {
 		console.log(err);
 	});
 });
-
+app.delete("/review:user_id/:market_id", (req, res) => {
+	let user_id = req.params.user_id;
+	let market_id = req.params.market_id;
+	model.Review.destroy({
+		where: {
+			"user_id": user_id,
+			"market_id": market_id
+		}
+	}).then(result => {
+		res.send(`${market_id}의 식당에 ${user_id}가 쓴 리뷰가 삭제되었습니다.`);
+	}).catch(err => {
+		console.log(err);
+	});
+});
 app.get("/gettest", (req, res) => {
 	res.send("give one");
 });
