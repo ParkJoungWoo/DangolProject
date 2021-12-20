@@ -50,7 +50,7 @@ app.put("/heart:market_id/:number", (req, res) => {
 	});
 });
 //식당 DB 모두 전송
-app.get("/giveAll", (req, res) => {
+app.get("/marketAll", (req, res) => {
 	model.Market.findAll({
 		where: {}
 	}).then(result => {
@@ -61,7 +61,7 @@ app.get("/giveAll", (req, res) => {
 	});
 });
 //식당 DB 일부 전송
-app.get("/give:number", (req, res) => {
+app.get("/market:number", (req, res) => {
 	let number = req.params.number;
 	model.Market.findAll({
 		where: {
@@ -75,6 +75,7 @@ app.get("/give:number", (req, res) => {
 	});
 });
 //Review
+//리뷰 입력
 app.post("/fetchReview", (req, res) => {
 	model.Review.create({
 		"market_id": req.body.market_id,
@@ -83,6 +84,33 @@ app.post("/fetchReview", (req, res) => {
 		"content": req.body.content
 	});
 });
+//리뷰 DB 모두 전송
+app.get("/reviewAll", (req, res) => {
+	model.Review.findAll({
+		where: {}
+	}).then(result => {
+		res.send(result);
+		return result;
+	}).catch(err => {
+		console.log(err);
+	});
+});
+//리뷰 DB 일부 전송
+app.get("/review:user_id/:market_id", (req, res) => {
+	let number = req.params.number;
+	model.Review.findAll({
+		where: {
+			"user_id": user_id,
+			"market_id": market_id
+		}
+	}).then(result => {
+		res.json(result);
+		return result;
+	}).catch(err => {
+		console.log(err);
+	});
+});
+
 app.get("/gettest", (req, res) => {
 	res.send("give one");
 });
