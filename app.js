@@ -111,7 +111,7 @@ app.get("/review:market_id", (req, res) => {
 	});
 });
 //리뷰 DB 일부 전송(유저)
-app.get("/review::market_id/user_id", (req, res) => {
+app.get("/review:market_id/:user_id", (req, res) => {
 	let user_id = req.params.user_id;
 	let market_id = req.params.market_id;
 	model.Review.findAll({
