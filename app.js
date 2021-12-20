@@ -96,7 +96,21 @@ app.get("/reviewAll", (req, res) => {
 		console.log(err);
 	});
 });
-//리뷰 DB 일부 전송
+//리뷰 DB 일부 전송(식당)
+app.get("/review/:market_id", (req, res) => {
+	let market_id = req.params.market_id;
+	model.Review.findAll({
+		where: {
+			"market_id": market_id
+		}
+	}).then(result => {
+		res.json(result);
+		return result;
+	}).catch(err => {
+		console.log(err);
+	});
+});
+//리뷰 DB 일부 전송(유저)
 app.get("/review:user_id/:market_id", (req, res) => {
 	let user_id = req.params.user_id;
 	let market_id = req.params.market_id;
@@ -112,6 +126,7 @@ app.get("/review:user_id/:market_id", (req, res) => {
 		console.log(err);
 	});
 });
+//리뷰 DB 일부 삭제
 app.delete("/review:user_id/:market_id", (req, res) => {
 	let user_id = req.params.user_id;
 	let market_id = req.params.market_id;
@@ -121,10 +136,11 @@ app.delete("/review:user_id/:market_id", (req, res) => {
 			"market_id": market_id
 		}
 	}).then(result => {
-	}).catch(err => {
+		if(result == null)
 		res.send(`${market_id}의 식당에 ${user_id}가 쓴 리뷰는 존재하지 않습니다.`);
+	}).catch(err => {
 	});
-	
+
 	model.Review.destroy({
 		where: {
 			"user_id": user_id,
@@ -136,6 +152,7 @@ app.delete("/review:user_id/:market_id", (req, res) => {
 		console.log(err);
 	});
 });
+
 app.get("/gettest", (req, res) => {
 	res.send("give one");
 });
