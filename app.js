@@ -115,6 +115,16 @@ app.get("/review:user_id/:market_id", (req, res) => {
 app.delete("/review:user_id/:market_id", (req, res) => {
 	let user_id = req.params.user_id;
 	let market_id = req.params.market_id;
+	model.Review.findAll({
+		where: {
+			"user_id": user_id,
+			"market_id": market_id
+		}
+	}).then(result => {
+	}).catch(err => {
+		res.send(`${market_id}의 식당에 ${user_id}가 쓴 리뷰는 존재하지 않습니다.`);
+	});
+	
 	model.Review.destroy({
 		where: {
 			"user_id": user_id,
