@@ -178,7 +178,6 @@ app.post("/fetchUser", (req, res) => {
 		"user_id": req.body[i].user_id,
 		"tag_list": req.body[i].tag_list,
 		"like_list": req.body[i].like_list,
-		"market_id": req.body[i].market_id,
 		"M_1": req.body[i].M_1,
 		"M_2": req.body[i].M_2,
 		"M_3": req.body[i].M_3,
@@ -191,7 +190,6 @@ app.put("/user:user_id/edit", (req, res) => {
 	let user_id = req.params.user_id;
 	model.Market.update({
 		"tag_list": req.body.tag_list,
-		"market_id": req.body.market_id,
 		"like_list": req.body[i].like_list,
 		"M_1": req.body.M_1,
 		"M_2": req.body.M_2,
