@@ -20,7 +20,7 @@ app.post("/fetchMarket", (req, res) => {
 			"name": req.body[i].name,
 			"categ": req.body[i].categ,
 			"likenum": req.body[i].likenum,
-			"local": req.body[i].local,
+			"address": req.body[i].address,
 			"seatnum": req.body[i].seatnum,
 			"M_1": req.body[i].M_1,
 			"M_2": req.body[i].M_2,
@@ -190,7 +190,7 @@ app.post("/fetchUser", (req, res) => {
 	res.send("입력완료");
 });
 //유저 DB 전송
-app.get("userAll", (req, res) => {
+app.get("/userAll", (req, res) => {
 	model.User.findAll({
 		where: {}
 	}).then(result => {
