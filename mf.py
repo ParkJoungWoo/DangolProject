@@ -18,7 +18,7 @@ import scipy.sparse.linalg
 from sklearn.feature_extraction.text import CountVectorizer  # 피체 벡터화
 from sklearn.metrics.pairwise import cosine_similarity  # 코사인 유사도
 
-debug = 0
+debug = 1
 id_input = int(sys.argv[1])
 
 def main():
@@ -264,6 +264,10 @@ def main():
     print()
   final_recommend = recommend_restaurants(score_final, id_input, user_res_rating, 10)
   #final_recommend_old = recommend_restaurants_old(svd_predict_df, id_input, user_res_rating, 10)
+  with open('test.json', 'w') as f:
+    f.write(final_recommend)
+  # with open('test.json', 'w') as outfile:
+  #   json.dump(final_recommend, outfile)
   if debug == 1:
     print("final recommend")
     print(final_recommend)
@@ -290,8 +294,6 @@ def recommend_restaurants(score_final, user_id, user_res_rating, num_row=5):
       continue
     score_row = score_row.drop(a)
   final_recommend = score_row.to_json()
-  with open('test.json', 'w') as outfile:
-    json.dump(final_recommend, outfile)
   return final_recommend
 
 
