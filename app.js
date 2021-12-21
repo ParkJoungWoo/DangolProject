@@ -173,6 +173,7 @@ app.delete("/review:market_id/:user_id", (req, res) => {
 		console.log(err);
 	});
 });
+//User
 //유저 DB 입력
 app.post("/fetchUser", (req, res) => {
 	for (let i = 0; i < req.body.length; i++)
@@ -187,6 +188,17 @@ app.post("/fetchUser", (req, res) => {
 		"local": req.body[i].local
 	});
 	res.send("입력완료");
+});
+//유저 DB 전송
+app.get("userAll", (req, res) => {
+	model.User.findAll({
+		where: {}
+	}).then(result => {
+		res.send(result);
+		return result;
+	}).catch(err => {
+		console.log(err);
+	});
 });
 //유저 DB 일부 수정(유저)
 app.put("/user:user_id/edit", (req, res) => {

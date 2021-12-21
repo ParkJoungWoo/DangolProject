@@ -9,128 +9,276 @@ Original file is located at
 
 import json, requests
 import numpy as np
-
-res_url = requests.get("http://15.165.204.148:8080/giveAll")
-res_text = res_url.text
-sample_res_to_dict = json.loads(res_text)
-
-sample_user = '''[{
-  "id" : 0,
-  "name" : "박상연"
-},{
-  "id" : 1,
-  "name" : "김희원"
-},{
-  "id" : 2,
-  "name" : "박정우"
-}]'''
-
-sample_review = '''[{
-    "id" : 0,
-    "name" : "내가찜한닭",
-    "username" : "박상연",
-    "score" : 4
-},{
-    "id" : 2,
-    "name" : "지지고",
-    "username" : "박정우",
-    "score" : 5
-},{
-    "id" : 1,
-    "name" : "백채",
-    "username" : "김희원",
-    "score" : 3
-},{
-    "id" : 1,
-    "name" : "백채",
-    "username" : "박상연",
-    "score" : 5
-},{
-    "id" : 1,
-    "name" : "백채",
-    "username" : "박정우",
-    "score" : 3
-},{
-    "id" : 3,
-    "name" : "청년다방",
-    "username" : "김희원",
-    "score" : 4
-},{
-    "id" : 3,
-    "name" : "청년다방",
-    "username" : "박상연",
-    "score" : 4
-},{
-    "id" : 1,
-    "name" : "백채",
-    "username" : "김희원",
-    "score" : 3
-}]'''
-# sample_res_to_dict = json.loads(sample_res)
-sample_user_to_dict = json.loads(sample_user)
-sample_review_to_dict = json.loads(sample_review)
-print("sample_user", sample_user)
-print("sample_user_to_dict",sample_user_to_dict)
-
-train_data = []
-
-for i in range(len(sample_review_to_dict)):
-  temp = []
-  for j in range(len(sample_user_to_dict)):
-    if sample_user_to_dict[j]['name'] == sample_review_to_dict[i]['username']:
-      temp.append(sample_user_to_dict[j]['id']) # user id
-  temp.append(sample_review_to_dict[i]['id']) # restaurant id
-  temp.append(sample_review_to_dict[i]['score'])
-  train_data.append(temp)
-
-
 import pandas as pd
-train_data_to_pd = pd.DataFrame(train_data)
-train_data_to_pd = train_data_to_pd.rename(columns={train_data_to_pd.columns[0]: 'user',train_data_to_pd.columns[1]: 'restaurant',train_data_to_pd.columns[2]: 'rating'})
-# train_data_to_pd.rename(columns={train_data_to_pd.columns[1]: 'restaurant'})
-# train_data_to_pd.rename(columns={train_data_to_pd.columns[2]: 'rating'})
-# train_data_to_pd.columns.values[0] = "user"
-# train_data_to_pd.columns.values[1] = "restaurant"
-# train_data_to_pd.columns.values[2] = "rating"
-
-user_res_rating = train_data_to_pd.pivot_table('rating',index = 'user',columns = 'restaurant').fillna(0)
-
-
-matrix = user_res_rating.to_numpy()
-version = 1 # 0 is mean without 0, 1 is just mean
-
-if version==0:
-  matrix_mean = np.true_divide(matrix.sum(1),(matrix!=0).sum(1))
-  print(matrix_mean)
-  matrix_user_mean = matrix - matrix_mean.reshape(-1,1)
-elif version==1:
-  user_res_rating_mean = np.mean(matrix, axis=1)
-  print(matrix)
-  print(user_res_rating_mean)
-  print(user_res_rating_mean.reshape(-1,1))
-  matrix_user_mean = matrix - user_res_rating_mean.reshape(-1,1)
-print(matrix_user_mean)
-
+import sys
+import copy
 import scipy
 import scipy.sparse
 import scipy.sparse.linalg
-U, sigma, Vt = scipy.sparse.linalg.svds(matrix_user_mean, k = 2)
-print(U.shape)
-print(sigma.shape)
-print(Vt.shape)
+from sklearn.feature_extraction.text import CountVectorizer  # 피체 벡터화
+from sklearn.metrics.pairwise import cosine_similarity  # 코사인 유사도
 
-sigma = np.diag(sigma)
+debug = 1
+id_input = int(sys.argv[1])
 
-svd_user_predicted_ratings = np.dot(np.dot(U, sigma),Vt) + user_res_rating_mean.reshape(-1,1)
-svd_predict_df = pd.DataFrame(svd_user_predicted_ratings, columns = user_res_rating.columns)
+def main():
+  res_url = requests.get("http://15.165.204.148:8080/marketAll")
+  res_text = res_url.text
+  sample_res_to_dict = json.loads(res_text)
+
+  sample_user = '''[{
+    "id" : 0,
+    "name" : "박상연"
+  },{
+    "id" : 1,
+    "name" : "김희원"
+  },{
+    "id" : 2,
+    "name" : "박정우"
+  }]'''
+
+  sample_review = '''[{
+      "index" : 0,
+      "market_id" : 1,
+      "user_id" : 0,
+      "star_num" : 4,
+      "content" : "abc"
+  },{
+      "index" : 1,
+      "market_id" : 34,
+      "user_id" : 2,
+      "star_num" : 5
+  },{
+      "index" : 2,
+      "market_id" : 28,
+      "user_id" : 1,
+      "star_num" : 3,
+      "content" : "abc"
+  },{
+      "index" : 3,
+      "market_id" : 28,
+      "user_id" : 0,
+      "star_num" : 5,
+      "content" : "abc"
+  },{
+      "index" : 4,
+      "market_id" : 28,
+      "user_id" : 2,
+      "star_num" : 3,
+      "content" : "abc"
+  },{
+      "index" : 5,
+      "market_id" : 80,
+      "user_id" : 1,
+      "star_num" : 4,
+      "content" : "abc"
+  },{
+      "index" : 6,
+      "market_id" : 80,
+      "user_id" : 0,
+      "star_num" : 4,
+      "content" : "abc"
+  }]'''
+
+  # sample_res_to_dict = json.loads(sample_res)
+  sample_user_to_dict = json.loads(sample_user)
+  sample_review_to_dict = json.loads(sample_review)
+  if debug==1:
+    print("sample of users")
+    print(sample_user)
+    print("make sample of user to dictionary")
+    print(sample_user_to_dict)
+    print()
+
+  train_data = []
+
+  for i in range(len(sample_review_to_dict)):
+    temp = []
+    # for j in range(len(sample_user_to_dict)):
+    #   if sample_user_to_dict[j]['name'] == sample_review_to_dict[i]['username']:
+    #     temp.append(sample_user_to_dict[j]['id']) # user id
+    temp.append(sample_review_to_dict[i]['user_id'])  # user id
+    temp.append(sample_review_to_dict[i]['market_id']) # restaurant id
+    temp.append(sample_review_to_dict[i]['star_num'])
+    train_data.append(temp)
+  if debug==1:
+    print("who give star to where")
+    print(train_data)
+    print()
+
+  
+  train_data_to_pd = pd.DataFrame(train_data)
+  train_data_to_pd = train_data_to_pd.rename(columns={train_data_to_pd.columns[0]: 'user',train_data_to_pd.columns[1]: 'restaurant',train_data_to_pd.columns[2]: 'rating'})
+  # train_data_to_pd.rename(columns={train_data_to_pd.columns[1]: 'restaurant'})
+  # train_data_to_pd.rename(columns={train_data_to_pd.columns[2]: 'rating'})
+  # train_data_to_pd.columns.values[0] = "user"
+  # train_data_to_pd.columns.values[1] = "restaurant"
+  # train_data_to_pd.columns.values[2] = "rating"
+  if debug==1:
+    print("train_data_to_pd")
+    print(train_data_to_pd)
+    print()
+  user_res_rating = train_data_to_pd.pivot_table('rating',index = 'user',columns = 'restaurant').fillna(0)
+  if debug==1:
+    print("user restaurant rating")
+    print(user_res_rating)
+    print()
+  matrix = np.zeros((len(sample_user_to_dict),len(sample_res_to_dict)))
+  for i in range(len(train_data)):
+    matrix[train_data[i][0]][train_data[i][1]-1] = train_data[i][2]
+  if debug==1:
+    print("matrix")
+    print(matrix)
+    print()
+
+  #matrix = user_res_rating.to_numpy()
 
 
-debug = 0
+  version = 1 # 0 is mean without 0, 1 is just mean
 
-def recommend_restaurants(svd_predict_df, user_id, user_res_rating, num_row=5):
+  if version==0:
+    matrix_mean = np.true_divide(matrix.sum(1),(matrix!=0).sum(1))
+    if debug==1:
+      print("matrix mean")
+      print(matrix_mean)
+      print()
+    matrix_user_mean = matrix - matrix_mean.reshape(-1,1)
+  elif version==1:
+    user_res_rating_mean = np.mean(matrix, axis=1)
+    if debug==1:
+      print("user_res_rating_mean")
+      print(user_res_rating_mean)
+      print()
+    matrix_user_mean = matrix - user_res_rating_mean.reshape(-1,1)
+  if debug==1:
+    print("matrix_user_mean")
+    print(matrix_user_mean)
+    print()
+
+  
+  U, sigma, Vt = scipy.sparse.linalg.svds(matrix_user_mean, k = 2)
+  if debug == 1:
+    print("shape of U, sigma, Vt")
+    print(U.shape,sigma.shape,Vt.shape)
+    print()
+
+  sigma = np.diag(sigma)
+
+  svd_user_predicted_ratings = np.dot(np.dot(U, sigma),Vt) + user_res_rating_mean.reshape(-1,1)
+  if debug == 1:
+    print("svd_user_predicted_ratings")
+    print(svd_user_predicted_ratings)
+    print()
+
+  svd_predict_df = pd.DataFrame(svd_user_predicted_ratings, columns=[i+1 for i in range(110)])
+  
+  if debug == 1:
+    print("svd_predict_df")
+    print(svd_predict_df)
+    print()
+  score_mf = []
+  score_mf.append(svd_predict_df.columns)
+  score_mf.append(svd_predict_df.iloc[id_input])
+  score_mf = np.array(score_mf)
+  if debug == 1:
+    print("score using MF")
+    print(score_mf)
+    print()
+
+
+  tag_array = []
+  for i in range(len(sample_res_to_dict)):
+    temp = []
+    temp.append(sample_res_to_dict[i]['id'])
+    temp.append(' '.join(sample_res_to_dict[i]['foodtag']))
+    tag_array.append(temp)
+  if debug == 1:
+    print("tag array")
+    print(tag_array)
+    print()
+
+  tag_df = pd.DataFrame(np.array(tag_array).T[1], index=np.array(tag_array).T[0], columns=['cate'])
+  if debug == 1:
+    print("tag dataframe")
+    print(tag_df)
+    print()
+
+  count_vect_category = CountVectorizer(min_df=0, ngram_range=(1,1))
+  place_category = count_vect_category.fit_transform(tag_df['cate']) 
+  place_simi_cate = cosine_similarity(place_category, place_category) 
+  place_simi_cate_sorted_ind = place_simi_cate.argsort()[:, ::-1]
+
+  if debug == 1:
+    print("place simi category")
+    print(place_simi_cate)
+    print()
+  # for i in range(len(place_simi_cate[30])):
+  #   print(place_simi_cate[30][i], place_simi_cate_sorted_ind[30][i])
+
+  how_do_you_review = []
+  for i in range(len(sample_review_to_dict)):
+      if sample_review_to_dict[i]['user_id'] == id_input:
+          how_do_you_review.append([sample_review_to_dict[i]['market_id']-1, sample_review_to_dict[i]['star_num']-3])
+  
+  score_cs = np.zeros((len(sample_res_to_dict)))
+  for element in how_do_you_review:
+      score_cs += place_simi_cate[element[0]]*element[1]/2
+  score_cs = score_cs/len(how_do_you_review)
+  if debug == 1:
+    print("score using CS")
+    print(score_cs)
+    print()
+
+  
+  score_final = copy.deepcopy(score_mf)
+
+  score_final[1] = score_mf[1]/max(score_mf[1]) + score_cs/max(score_cs)
+  
+  
+  score_final = pd.DataFrame(score_final)
+  header = score_final.iloc[0]
+  header = header.astype(int)
+  score_final = score_final[1:]
+  score_final.rename(columns=header, inplace=True)
+  if debug == 1:
+    print("***********score_final**********")
+    print(score_final)
+    print()
+  final_recommend = recommend_restaurants(score_final, id_input, user_res_rating, 10)
+  #final_recommend_old = recommend_restaurants_old(svd_predict_df, id_input, user_res_rating, 10)
+  if debug == 1:
+    print("final recommend")
+    print(final_recommend)
+  return final_recommend
+
+
+def recommend_restaurants(score_final, user_id, user_res_rating, num_row=5):
+  score_row = score_final.loc[1].sort_values(ascending=False)
+  already_ate = user_res_rating.iloc[user_id]
+  if debug==1:
+    print("score row sorted")
+    print(score_row)
+    print("already ate")
+    print(already_ate)
+    print()
+  for a, b in already_ate.items():
+    if b != 0:
+      score_row = score_row.drop(a)
+
+  count = 0
+  for a, b in score_row.items():
+    count = count+1
+    if count <= num_row:
+      continue
+    score_row = score_row.drop(a)
+  final_recommend = score_row.to_json()
+  return final_recommend
+
+
+def recommend_restaurants_old(svd_predict_df, user_id, user_res_rating, num_row=5):
   score_row = svd_predict_df.iloc[user_id].sort_values(ascending=False)
   already_ate = user_res_rating.iloc[user_id]
-  already_ate = already_ate.tolist()
+  print("already_ate:", already_ate)
   if debug == 1:
     print(type(already_ate))
     print(already_ate)
@@ -139,19 +287,20 @@ def recommend_restaurants(svd_predict_df, user_id, user_res_rating, num_row=5):
     print(score_row)
     print(type(score_row))
     print(score_row[0])
-  for i in range(len(already_ate)):
-    if already_ate[i] != 0:
-      score_row = score_row.drop(i)
+  for a, b in already_ate.items():
+    if b != 0:
+      score_row = score_row.drop(a)
+
   count = 0
   for a, b in score_row.items():
     count = count+1
     if count <= num_row:
       continue
     score_row = score_row.drop(a)
-  final_recommend = score_row.to_json()
-  
   print(score_row)
+  final_recommend = score_row.to_json()
   return final_recommend
+  
+if __name__ == '__main__':
+  main()
 
-final_recommend = recommend_restaurants(svd_predict_df, 1, user_res_rating, 10)
-print(final_recommend)
