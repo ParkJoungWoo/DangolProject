@@ -38,6 +38,7 @@ module.exports = (sequelize, DataTypes) => {
 			allowNull: true,
 		}
 	}, {
+		initialAutoIncrement: 0,
 		underscored: true,
 		freezeTableName: true,
 		modelName: 'User',
