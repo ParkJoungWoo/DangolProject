@@ -30,6 +30,7 @@ module.exports = (sequelize, DataTypes) => {
 			autoIncrement: false
 		}    
 	}, {
+		initialAutoIncrement: 0,
 		underscored: true,
 		freezeTableName: true,
 		modelName: 'Review',

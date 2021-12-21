@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => {
 			unique: true,
 			allowNull: false,
 			primaryKey: true,
-			autoIncrement: true
+			autoIncrement: false
 		},
         tag_list: {
 			type: DataTypes.JSON,

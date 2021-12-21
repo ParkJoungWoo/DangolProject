@@ -65,6 +65,7 @@ module.exports = (sequelize, DataTypes) => {
 			allowNull: false
 		}
 	}, {
+		initialAutoIncrement: 0,
 		underscored: true,
 		freezeTableName: true,
 		modelName: 'Market',
