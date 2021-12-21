@@ -290,6 +290,8 @@ def recommend_restaurants(score_final, user_id, user_res_rating, num_row=5):
       continue
     score_row = score_row.drop(a)
   final_recommend = score_row.to_json()
+  with open('test.json', 'w') as outfile:
+    json.dump(final_recommend, outfile)
   return final_recommend
 
 
