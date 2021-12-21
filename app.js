@@ -31,6 +31,7 @@ app.post("/fetchMarket", (req, res) => {
 			"weather": req.body[i].weather,
 			"image": req.body[i].image
 		});
+		res.send("입력완료");
 });
 //좋아요 개수 수정
 app.put("/heart:market_id/:number", (req, res) => {
@@ -84,6 +85,7 @@ app.post("/fetchReview", (req, res) => {
 		"star_num": req.body[i].star_num,
 		"content": req.body[i].content
 	});
+	res.send("입력완료");
 });
 //리뷰 DB 모두 전송
 app.get("/reviewAll", (req, res) => {
@@ -184,6 +186,7 @@ app.post("/fetchUser", (req, res) => {
 		"M_4": req.body[i].M_4,
 		"local": req.body[i].local
 	});
+	res.send("입력완료");
 });
 //유저 DB 일부 수정(유저)
 app.put("/user:user_id/edit", (req, res) => {
