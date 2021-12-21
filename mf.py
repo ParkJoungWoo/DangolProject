@@ -18,7 +18,7 @@ import scipy.sparse.linalg
 from sklearn.feature_extraction.text import CountVectorizer  # 피체 벡터화
 from sklearn.metrics.pairwise import cosine_similarity  # 코사인 유사도
 
-debug = 1
+debug = 0
 id_input = int(sys.argv[1])
 
 def main():
@@ -27,14 +27,20 @@ def main():
   sample_res_to_dict = json.loads(res_text)
 
   sample_user = '''[{
-    "id" : 0,
-    "name" : "박상연"
+    "user_id" : 0,
+    "name" : "박상연",
+    "tag_list" : [2,5,10],
+    "like_list": [3, 20 ,28, 50]
   },{
-    "id" : 1,
-    "name" : "김희원"
+    "user_id" : 1,
+    "name" : "김희원",
+    "tag_list" : [1,14,18],
+    "like_list": [1, 40 ,61, 70]
   },{
-    "id" : 2,
-    "name" : "박정우"
+    "user_id" : 2,
+    "name" : "박정우",
+    "tag_list" : [0,4,13],
+    "like_list": [5, 14, 28]
   }]'''
 
   sample_review = '''[{
@@ -43,42 +49,42 @@ def main():
       "user_id" : 0,
       "star_num" : 4,
       "content" : "abc"
-  },{
+    },{
       "index" : 1,
       "market_id" : 34,
       "user_id" : 2,
       "star_num" : 5
-  },{
+    },{
       "index" : 2,
       "market_id" : 28,
       "user_id" : 1,
       "star_num" : 3,
       "content" : "abc"
-  },{
+    },{
       "index" : 3,
       "market_id" : 28,
       "user_id" : 0,
       "star_num" : 5,
       "content" : "abc"
-  },{
+    },{
       "index" : 4,
       "market_id" : 28,
       "user_id" : 2,
       "star_num" : 3,
       "content" : "abc"
-  },{
+    },{
       "index" : 5,
       "market_id" : 80,
       "user_id" : 1,
       "star_num" : 4,
       "content" : "abc"
-  },{
+    },{
       "index" : 6,
       "market_id" : 80,
       "user_id" : 0,
       "star_num" : 4,
       "content" : "abc"
-  }]'''
+    }]'''
 
   # sample_res_to_dict = json.loads(sample_res)
   sample_user_to_dict = json.loads(sample_user)
@@ -101,6 +107,14 @@ def main():
     temp.append(sample_review_to_dict[i]['market_id']) # restaurant id
     temp.append(sample_review_to_dict[i]['star_num'])
     train_data.append(temp)
+  for i in range(len(sample_user_to_dict)):
+    temp_like = sample_user_to_dict[i]['like_list']
+    for res in temp_like:
+      temp = []
+      temp.append(sample_user_to_dict[i]['user_id'])
+      temp.append(res)
+      temp.append(5)
+      train_data.append(temp)
   if debug==1:
     print("who give star to where")
     print(train_data)
@@ -125,7 +139,7 @@ def main():
     print()
   matrix = np.zeros((len(sample_user_to_dict),len(sample_res_to_dict)))
   for i in range(len(train_data)):
-    matrix[train_data[i][0]][train_data[i][1]-1] = train_data[i][2]
+    matrix[train_data[i][0]][train_data[i][1]] = train_data[i][2]
   if debug==1:
     print("matrix")
     print(matrix)
@@ -169,8 +183,12 @@ def main():
     print("svd_user_predicted_ratings")
     print(svd_user_predicted_ratings)
     print()
+  
+  temp = []
+  for i in range(len(sample_res_to_dict)):
+    temp.append(sample_res_to_dict[i]['id'])
 
-  svd_predict_df = pd.DataFrame(svd_user_predicted_ratings, columns=[i+1 for i in range(110)])
+  svd_predict_df = pd.DataFrame(svd_user_predicted_ratings, columns=temp)
   
   if debug == 1:
     print("svd_predict_df")
@@ -232,7 +250,7 @@ def main():
   
   score_final = copy.deepcopy(score_mf)
 
-  score_final[1] = score_mf[1]/max(score_mf[1]) + score_cs/max(score_cs)
+  score_final[1] = (score_mf[1]/max(abs(score_mf[1]))+1)/2*30 + score_cs/max(score_cs)*70
   
   
   score_final = pd.DataFrame(score_final)
