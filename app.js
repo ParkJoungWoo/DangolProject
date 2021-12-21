@@ -188,9 +188,9 @@ app.post("/fetchUser", (req, res) => {
 //유저 DB 일부 수정(유저)
 app.put("/user:user_id/edit", (req, res) => {
 	let user_id = req.params.user_id;
-	model.Market.update({
+	model.User.update({
 		"tag_list": req.body.tag_list,
-		"like_list": req.body[i].like_list,
+		"like_list": req.body.like_list,
 		"M_1": req.body.M_1,
 		"M_2": req.body.M_2,
 		"M_3": req.body.M_3,
@@ -198,7 +198,7 @@ app.put("/user:user_id/edit", (req, res) => {
 		"local": req.body.local
 	}, {
 		where: {
-			user_id: user_id
+			"user_id": user_id
 		}
 	}).then(result => {
 		res.json(result);
