@@ -126,6 +126,25 @@ app.get("/review:market_id/:user_id", (req, res) => {
 		console.log(err);
 	});
 });
+//리뷰 DB 일부 수정(유저)
+app.put("/review:market_id/:user_id", (req, res) => {
+	let market_id = req.params.market_id;
+	let user_id = req.params.user_id;
+	model.Market.update({
+		star_num: req.body.star_num,
+		content : req.body.content
+	}, {
+		where: {
+			market_id: market_id,
+			user_id: user_id
+		}
+	}).then(result => {
+		res.json(result);
+		return result;
+	}).catch(err => {
+		console.log(err);
+	});
+});
 //리뷰 DB 일부 삭제
 app.delete("/review:market_id/:user_id", (req, res) => {
 	let user_id = req.params.user_id;
@@ -152,9 +171,57 @@ app.delete("/review:market_id/:user_id", (req, res) => {
 		console.log(err);
 	});
 });
-
-app.get("/gettest", (req, res) => {
-	res.send("give one");
+//유저 DB 입력
+app.post("/fetchUser", (req, res) => {
+	for (let i = 0; i < req.body.length; i++)
+	model.User.create({
+		"user_id": req.body[i].user_id,
+		"tag_list": req.body[i].tag_list,
+		"like_list": req.body[i].like_list,
+		"market_id": req.body[i].market_id,
+		"M_1": req.body[i].M_1,
+		"M_2": req.body[i].M_2,
+		"M_3": req.body[i].M_3,
+		"M_4": req.body[i].M_4,
+		"local": req.body[i].local
+	});
+});
+//유저 DB 일부 수정(유저)
+app.put("/user:user_id/edit", (req, res) => {
+	let user_id = req.params.user_id;
+	model.Market.update({
+		"tag_list": req.body.tag_list,
+		"market_id": req.body.market_id,
+		"like_list": req.body[i].like_list,
+		"M_1": req.body.M_1,
+		"M_2": req.body.M_2,
+		"M_3": req.body.M_3,
+		"M_4": req.body.M_4,
+		"local": req.body.local
+	}, {
+		where: {
+			user_id: user_id
+		}
+	}).then(result => {
+		res.json(result);
+		return result;
+	}).catch(err => {
+		console.log(err);
+	});
+});
+//유저가 쓴 리뷰 받기
+app.get("/user:user_id/review", (req, res) => {
+	let user_id = req.params.user_id;
+	model.Review.findAll({
+		where: {
+			"user_id": user_id
+		}
+	}).then(result => {
+		res.json(result);
+		return result;
+	}).catch(err => {
+		console.log(err);
+	});
 });
 
 module.exports = app;
