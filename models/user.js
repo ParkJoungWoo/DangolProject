@@ -13,6 +13,10 @@ module.exports = (sequelize, DataTypes) => {
 			allowNull: true,
 			autoIncrement: false
 		},
+		like_list: {
+			type: DataTypes.JSON,
+			allowNull: true,
+		},
         M_1: {
 			type: DataTypes.BOOLEAN,
 			allowNull: false,
