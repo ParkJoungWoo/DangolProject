@@ -6,6 +6,7 @@ module.exports = (sequelize, DataTypes) => {
 			unique: true,
 			allowNull: true,
 			primaryKey: true,
+			initialAutoIncrement: 0,
 			autoIncrement: true
 		},
 		name: {
@@ -65,7 +66,6 @@ module.exports = (sequelize, DataTypes) => {
 			allowNull: false
 		}
 	}, {
-		initialAutoIncrement: 0,
 		underscored: true,
 		freezeTableName: true,
 		modelName: 'Market',
