@@ -11,7 +11,6 @@ module.exports = (sequelize, DataTypes) => {
         market_id: {
 			type: DataTypes.INTEGER,
 			allowNull: false,
-			primaryKey: true,
 			autoIncrement: false
 		},
 		user_id: {
@@ -30,6 +29,7 @@ module.exports = (sequelize, DataTypes) => {
 			autoIncrement: false
 		}    
 	}, {
+		initialAutoIncrement: 0,
 		underscored: true,
 		freezeTableName: true,
 		modelName: 'Review',
