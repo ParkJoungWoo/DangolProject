@@ -18,10 +18,14 @@ import scipy.sparse.linalg
 from sklearn.feature_extraction.text import CountVectorizer  # 피체 벡터화
 from sklearn.metrics.pairwise import cosine_similarity  # 코사인 유사도
 
-debug = 1
+debug = 0
 id_input = int(sys.argv[1])
+print(len(sys.argv))
+if len(sys.argv)>=3:
+  debug = int(sys.argv[2])
 
 def main():
+  
   res_url = requests.get("http://15.165.204.148:8080/marketAll")
   res_text = res_url.text
   sample_res_to_dict = json.loads(res_text)
@@ -88,7 +92,15 @@ def main():
 
   # sample_res_to_dict = json.loads(sample_res)
   sample_user_to_dict = json.loads(sample_user)
-  sample_review_to_dict = json.loads(sample_review)
+  user_url = requests.get("http://15.165.204.148:8080/userAll")
+  user_text = user_url.text
+  sample_user_to_dict = json.loads(user_text)
+
+  #sample_review_to_dict = json.loads(sample_review)
+  review_url = requests.get("http://15.165.204.148:8080/reviewAll")
+  review_text = review_url.text
+  sample_review_to_dict = json.loads(review_text)
+
   if debug==1:
     print("sample of users")
     print(sample_user)
@@ -137,9 +149,24 @@ def main():
     print("user restaurant rating")
     print(user_res_rating)
     print()
-  matrix = np.zeros((len(sample_user_to_dict),len(sample_res_to_dict)))
+
+  user_id_set = set()
+  for user in sample_user_to_dict:
+    user_id_set.add(user['user_id'])
+  for user in sample_review_to_dict:
+    user_id_set.add(user['user_id'])
+  user_id_list = list(user_id_set)
+  user_id_list.sort()
+  if debug==1:
+    print("user id set")
+    print(user_id_set)
+    print("user id list")
+    print(user_id_list)
+    print()
+
+  matrix = np.zeros((len(user_id_list),len(sample_res_to_dict)))
   for i in range(len(train_data)):
-    matrix[train_data[i][0]][train_data[i][1]] = train_data[i][2]
+    matrix[user_id_list.index(train_data[i][0])][train_data[i][1]] = train_data[i][2]
   if debug==1:
     print("matrix")
     print(matrix)
@@ -170,7 +197,7 @@ def main():
     print()
 
   
-  U, sigma, Vt = scipy.sparse.linalg.svds(matrix_user_mean, k = 2)
+  U, sigma, Vt = scipy.sparse.linalg.svds(matrix_user_mean, k = min(len(user_id_list),len(sample_res_to_dict))-1)
   if debug == 1:
     print("shape of U, sigma, Vt")
     print(U.shape,sigma.shape,Vt.shape)
@@ -188,7 +215,7 @@ def main():
   for i in range(len(sample_res_to_dict)):
     temp.append(sample_res_to_dict[i]['id'])
 
-  svd_predict_df = pd.DataFrame(svd_user_predicted_ratings, columns=temp)
+  svd_predict_df = pd.DataFrame(svd_user_predicted_ratings, columns=temp, index=user_id_list)
   
   if debug == 1:
     print("svd_predict_df")
@@ -196,7 +223,7 @@ def main():
     print()
   score_mf = []
   score_mf.append(svd_predict_df.columns)
-  score_mf.append(svd_predict_df.iloc[id_input])
+  score_mf.append(svd_predict_df.loc[id_input])
   score_mf = np.array(score_mf)
   if debug == 1:
     print("score using MF")
@@ -241,16 +268,18 @@ def main():
   score_cs = np.zeros((len(sample_res_to_dict)))
   for element in how_do_you_review:
       score_cs += place_simi_cate[element[0]]*element[1]/2
-  score_cs = score_cs/len(how_do_you_review)
-  if debug == 1:
-    print("score using CS")
-    print(score_cs)
-    print()
+  if len(how_do_you_review) !=0:
+    score_cs = score_cs/len(how_do_you_review)
+    if debug == 1:
+      print("score using CS")
+      print(score_cs)
+      print()
+    score_final = copy.deepcopy(score_mf)
 
-  
-  score_final = copy.deepcopy(score_mf)
-
-  score_final[1] = (score_mf[1]/max(abs(score_mf[1]))+1)/2*30 + score_cs/max(score_cs)*70
+    score_final[1] = (score_mf[1]/max(abs(score_mf[1]))+1)/2*30 + score_cs/max(score_cs)*70
+  else:
+    score_final = copy.deepcopy(score_mf)
+    score_final[1] = (score_mf[1]/max(abs(score_mf[1]))+1)/2*100
   
   
   score_final = pd.DataFrame(score_final)
@@ -262,7 +291,7 @@ def main():
     print("***********score_final**********")
     print(score_final)
     print()
-  final_recommend = recommend_restaurants(score_final, id_input, user_res_rating, 10)
+  final_recommend = recommend_restaurants(score_final, id_input, user_res_rating, 9)
   #final_recommend_old = recommend_restaurants_old(svd_predict_df, id_input, user_res_rating, 10)
   with open('test.json', 'w') as f:
     f.write(final_recommend)
@@ -276,7 +305,7 @@ def main():
 
 def recommend_restaurants(score_final, user_id, user_res_rating, num_row=5):
   score_row = score_final.loc[1].sort_values(ascending=False)
-  already_ate = user_res_rating.iloc[user_id]
+  already_ate = user_res_rating.loc[user_id]
   if debug==1:
     print("score row sorted")
     print(score_row)
