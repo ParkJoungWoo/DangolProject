@@ -329,7 +329,6 @@ def recommend_restaurants(score_final, user_id, user_res_rating, num_row=5):
 def recommend_restaurants_old(svd_predict_df, user_id, user_res_rating, num_row=5):
   score_row = svd_predict_df.iloc[user_id].sort_values(ascending=False)
   already_ate = user_res_rating.iloc[user_id]
-  print("already_ate:", already_ate)
   if debug == 1:
     print(type(already_ate))
     print(already_ate)

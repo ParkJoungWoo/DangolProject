@@ -1,10 +1,12 @@
 "use strict";
+import dotenv from 'dotenv'
 const express = require("express");
 const app = express();
 const model = require("./models");
 const sequelize = require("./models").sequelize;
 const cors = require('cors');
 
+dotenv.config();
 sequelize.sync();
 
 app.use(express.static(`${__dirname}/src`));
@@ -273,6 +275,63 @@ app.delete("/user:user_id/delete", (req, res) => {
 	}).catch(err => {
 		console.log(err);
 	});
+});
+//위치 데이터 받기
+app.get("/map:user_id/:market_id", (req, res) =>{
+	let user_id = req.params.user_id;
+	let market_id = req.params.market_id;
+
+	let user_local;
+	let market_local;
+
+	let options;
+
+
+	model.User.findAll({
+		where: {
+			"user_id" : user_id
+		}
+	}).then(result => {
+		if(result != null)
+		{
+			user_local = result[0].local;
+		}
+		else
+			res.send("nothing here");
+	}).catch(err => {
+		console.log(err);
+	});
+	model.Market.findAll({
+		where: {
+			id: market_id
+		}
+	}).then(result => {
+		if(result != null)
+		{
+			market_local = result[0].address;
+		}
+		else
+			res.send("nothing here");
+	}).catch(err => {
+		console.log(err);
+	});
+
+	options = {
+        url: `https://dapi.kakao.com/v2/local/search/address.json?query=${market_local}`,
+        headers: { 'Authorization': `KaKaoAK ${process.env.REST_KEY}` }
+    };
+
+    app.get(options, (req, body, res) => {
+        if (err) throw err;
+
+        const bodyObject = JSON.parse(body);
+
+        res.json({
+            user : user_local,
+			market : bodyObject
+        })
+    })
+
 });
 
 module.exports = app;
