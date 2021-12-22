@@ -288,11 +288,11 @@ function getLocal(user, address) {
 	};
 	request.get(options, (err, res, body) => {
 		data = JSON.parse(body);
+		return {
+			"market_local": [data.documents[0].x, data.documents[0].y],
+			"user_local": user
+		};
 	});
-	return {
-		"market_local": [data.documents[0].x, data.documents[0].y],
-		"user_local": user
-	};
 }
 app.get("/map:user_id/:market_id", (req, res, next) => {
 	let user_id = req.params.user_id;
