@@ -8,7 +8,7 @@ const cors = require('cors');
 
 require("dotenv").config();
 sequelize.sync();
-
+const request = require('request');
 app.use(express.static(`${__dirname}/src`));
 app.use(express.json());
 app.use(cors());
@@ -287,7 +287,7 @@ app.get("/map:user_id/:market_id", (req, res, next) => {
 			"user_id": user_id
 		}
 	}).then(result => {
-		if (result != null) {
+		if (result !== null) {
 			if (result[0].local != null) {
 				user_local = result[0].local;
 				next();
@@ -309,7 +309,7 @@ app.get("/map:user_id/:market_id", (req, res, next) => {
 			id: market_id
 		}
 	}).then(result => {
-		if (result != null) {
+		if (result !== null) {
 			market_address = result[0].address;
 			res.redirect(`/map${user_local}/${market_address}`)
 		} else {
@@ -331,17 +331,17 @@ app.get("/map:user_local/:market_address", (req, res, next) => {
 			'Authorization': `KaKaoAK ${process.env.REST_KEY}`
 		}
 	};
-	app.get(options, (req, body, res) => {
-		if (err) throw err;
+	request.get({
+		url: options.url,
+		headers: options.headers
+	}, (err, res, data) => {
+		if (err) {} else if (res.statusCode !== 200) {} else {
+			res.json({
+				user: user_local,
+				market: data
+			});
+		}
 
-		const bodyObject = JSON.parse(body);
-
-		console.log(bodyObject);
-		res.json({
-			user: user_local,
-			market: bodyObject
-		});
-		return 0;
 	});
 
 });
