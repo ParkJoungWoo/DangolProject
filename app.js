@@ -277,22 +277,22 @@ app.delete("/user:user_id/delete", (req, res) => {
 	});
 });
 //위치 데이터 받기
-function getLocal(user_local, market_address){
+function getLocal(user, address) {
 	let options;
 	let data;
 	options = {
 		headers: {
 			Authorization: 'KakaoAK 7ad583a800060a5dc0f42a89897b2c5c'
-		}, url: `https://dapi.kakao.com/v2/local/search/address.json?query=` + encodeURI(market_address),
+		},
+		url: `https://dapi.kakao.com/v2/local/search/address.json?query=` + encodeURI(address),
 	};
 	request.get(options, (err, err, body) => {
 		data = JSON.parse(body);
-		return {
-			"market_local": [data.documents[0].x, data.documents[0].y],
-			"user_local": user_local
-		};
-		
 	});
+	return {
+		"market_local": [data.documents[0].x, data.documents[0].y],
+		"user_local": user
+	};
 }
 app.get("/map:user_id/:market_id", (req, res, next) => {
 	let user_id = req.params.user_id;
@@ -329,7 +329,7 @@ app.get("/map:user_id/:market_id", (req, res, next) => {
 		if (result != null) {
 			market_address = result[0].address;
 			console.log(encodeURI(market_address));
-			res.send(getLocal(user_local, market_address))
+			res.send(getLocal(user_local, market_address));
 		} else {
 			console.log("nothing here");
 			res.send("nothing here");
