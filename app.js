@@ -310,6 +310,24 @@ app.get("/map:user_id/:market_id", (req, res, next) => {
 		if (result != null) {
 			market_local = result[0].address;
 			console.log("22");
+			options = {
+				url: `https://dapi.kakao.com/v2/local/search/address.json?query=${market_local}`,
+				headers: {
+					'Authorization': `KaKaoAK ${process.env.REST_KEY}`
+				}
+			};
+		
+			app.get(options, (req, body, res) => {
+				if (err) throw err;
+		
+				const bodyObject = JSON.parse(body);
+				console.log(bodyObject);
+				res.json({
+					user: user_local,
+					market: bodyObject
+				});
+				return 0;
+			});
 			next();
 		} else {
 			console.log("nothing here");
@@ -320,28 +338,26 @@ app.get("/map:user_id/:market_id", (req, res, next) => {
 		console.log(err);
 	});
 
-	options = {
-		url: `https://dapi.kakao.com/v2/local/search/address.json?query=${market_local}`,
-		headers: {
-			'Authorization': `KaKaoAK ${process.env.REST_KEY}`
-		}
-	};
+	// options = {
+	// 	url: `https://dapi.kakao.com/v2/local/search/address.json?query=${market_local}`,
+	// 	headers: {
+	// 		'Authorization': `KaKaoAK ${process.env.REST_KEY}`
+	// 	}
+	// };
 
-	console.log(user_local);
-	app.get(options, (req, body, res) => {
-		if (err) throw err;
+	// app.get(options, (req, body, res) => {
+	// 	if (err) throw err;
 
-		const bodyObject = JSON.parse(body);
+	// 	const bodyObject = JSON.parse(body);
 
-		console.log("nothing here");
-		console.log(bodyObject);
-		res.json({
-			user: user_local,
-			market: bodyObject
-		});
-		return 0;
-	});
-	console.log(market_local);
+	// 	console.log("nothing here");
+	// 	console.log(bodyObject);
+	// 	res.json({
+	// 		user: user_local,
+	// 		market: bodyObject
+	// 	});
+	// 	return 0;
+	// });
 
 });
 
