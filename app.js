@@ -291,6 +291,7 @@ app.get("/map:user_id/:market_id", (req, res, next) => {
 	}).then(result => {
 		if (result != null) {
 			user_local = result[0].local;
+			console.log(user_local);
 			next();
 		} else {
 			console.log("nothing here");
@@ -307,6 +308,7 @@ app.get("/map:user_id/:market_id", (req, res, next) => {
 	}).then(result => {
 		if (result != null) {
 			market_local = result[0].address;
+			console.log(market_local);
 			next();
 		} else {
 			console.log("nothing here");
@@ -323,7 +325,7 @@ app.get("/map:user_id/:market_id", (req, res, next) => {
 			'Authorization': `KaKaoAK ${process.env.REST_KEY}`
 		}
 	};
-
+	console.log(user_local);
 	app.get(options, (req, body, res) => {
 		if (err) throw err;
 
@@ -336,7 +338,8 @@ app.get("/map:user_id/:market_id", (req, res, next) => {
 			market: bodyObject
 		});
 		return 0;
-	})
+	});
+	console.log(market_local);
 
 });
 
