@@ -319,6 +319,7 @@ app.get("/map:user_id/:market_id", (req, res, next) => {
 				}
 			};
 			request.get(options, (err, res, body) => {
+				console.log("hello");
 				console.log(body);
 				return 0;
 			});
