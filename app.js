@@ -285,6 +285,8 @@ app.get("/map:user_id/:market_id", (req, res, next) => {
 	let market_address;
 
 	let options;
+	let data;
+
 	model.User.findAll({
 		where: {
 			"user_id": user_id
@@ -318,12 +320,13 @@ app.get("/map:user_id/:market_id", (req, res, next) => {
 					Authorization: 'KakaoAK 7ad583a800060a5dc0f42a89897b2c5c'
 				}, url: `https://dapi.kakao.com/v2/local/search/address.json?query=` + encodeURI(market_address),
 			};
-			request.get(options, (err, res, body) => {
-				res.json({
-					"user_local": user_local,
-					"market_local": [body.document.x, body.document.y]
-				})
-				return 0;
+			request.get(options, (err, err, body) => {
+				data = JSON.parse(body);
+				return callback({
+					"market_local": [data.documents[0].x, data.documents[0].y],
+					"user_local": user_local
+				});
+				
 			});
 			return 0;
 		} else {
