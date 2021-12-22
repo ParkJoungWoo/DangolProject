@@ -319,9 +319,10 @@ app.get("/map:user_id/:market_id", (req, res, next) => {
 				}, url: `https://dapi.kakao.com/v2/local/search/address.json?query=` + encodeURI(market_address),
 			};
 			request.get(options, (err, res, body) => {
-				console.log("hello");
-				console.log(err);
-				console.log(body);
+				res.json({
+					"user_local": user_local,
+					"market_local": [body.document.x, body.document.y]
+				})
 				return 0;
 			});
 			return 0;
@@ -335,31 +336,5 @@ app.get("/map:user_id/:market_id", (req, res, next) => {
 	});
 	return 0;
 });
-/*
-app.get("/map:user_local/:market_address", (req, options, res) => {
-	let user_local = req.params.user_local;
-	let market_address = req.params.market_address;
-	console.log(user_local);
-	console.log(market_address);
-	request.get({
-		url: options.url,
-		headers: options.headers
-	}, (err, res, data) => {
-		if (err) {
-			console.log(err);
-		} else if (res.statusCode !== 200) {
-			console.log(res.statusCode);
-		} else {
-			res.json({
-				user: user_local,
-				market: data
-			});
-			console.log("tested3");
-			console.log(data);
-		}
 
-	});
-	console.log("tested2");
-});
-*/
 module.exports = app;
