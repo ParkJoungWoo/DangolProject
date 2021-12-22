@@ -312,14 +312,15 @@ app.get("/map:user_id/:market_id", (req, res, next) => {
 	}).then(result => {
 		if (result != null) {
 			market_address = result[0].address;
+			console.log(encodeURI(market_address));
 			options = {
-				url: `https://dapi.kakao.com/v2/local/search/address.json?query=${market_address}`,
 				headers: {
-					'Authorization': `KaKaoAK 7ad583a800060a5dc0f42a89897b2c5c`
-				}
+					Authorization: 'KakaoAK 7ad583a800060a5dc0f42a89897b2c5c'
+				}, url: `https://dapi.kakao.com/v2/local/search/address.json?query=` + encodeURI(market_address),
 			};
 			request.get(options, (err, res, body) => {
 				console.log("hello");
+				console.log(err);
 				console.log(body);
 				return 0;
 			});
@@ -334,7 +335,7 @@ app.get("/map:user_id/:market_id", (req, res, next) => {
 	});
 	return 0;
 });
-
+/*
 app.get("/map:user_local/:market_address", (req, options, res) => {
 	let user_local = req.params.user_local;
 	let market_address = req.params.market_address;
@@ -349,19 +350,16 @@ app.get("/map:user_local/:market_address", (req, options, res) => {
 		} else if (res.statusCode !== 200) {
 			console.log(res.statusCode);
 		} else {
-			/*
 			res.json({
 				user: user_local,
 				market: data
 			});
-			*/
 			console.log("tested3");
 			console.log(data);
 		}
 
 	});
 	console.log("tested2");
-
 });
-
+*/
 module.exports = app;
