@@ -280,9 +280,7 @@ app.get("/map:user_id/:market_id", (req, res, next) => {
 	let market_id = req.params.market_id;
 
 	let user_local;
-	let market_local;
-
-	let options;
+	let market_address;
 
 	model.User.findAll({
 		where: {
@@ -290,9 +288,13 @@ app.get("/map:user_id/:market_id", (req, res, next) => {
 		}
 	}).then(result => {
 		if (result != null) {
-			user_local = result[0].local;
-			console.log("11");
-			next();
+			if (result[0].local != null) {
+				user_local = result[0].local;
+				next();
+			} else {
+				res.send("no info")
+				return 1;
+			}
 		} else {
 			console.log("nothing here");
 			res.send("nothing here");
@@ -308,27 +310,8 @@ app.get("/map:user_id/:market_id", (req, res, next) => {
 		}
 	}).then(result => {
 		if (result != null) {
-			market_local = result[0].address;
-			console.log("22");
-			options = {
-				url: `https://dapi.kakao.com/v2/local/search/address.json?query=${market_local}`,
-				headers: {
-					'Authorization': `KaKaoAK ${process.env.REST_KEY}`
-				}
-			};
-		
-			app.get(options, (req, body, res) => {
-				if (err) throw err;
-		
-				const bodyObject = JSON.parse(body);
-				console.log(bodyObject);
-				res.json({
-					user: user_local,
-					market: bodyObject
-				});
-				return 0;
-			});
-			next();
+			market_address = result[0].address;
+			res.redirect(`/map${user_local}/${market_address}`)
 		} else {
 			console.log("nothing here");
 			res.send("nothing here");
@@ -337,27 +320,29 @@ app.get("/map:user_id/:market_id", (req, res, next) => {
 	}).catch(err => {
 		console.log(err);
 	});
+});
+app.get("/map:user_local/:market_address", (req, res, next) => {
+	let user_local = req.params.user_local;
+	let market_address = req.params.market_address;
 
-	// options = {
-	// 	url: `https://dapi.kakao.com/v2/local/search/address.json?query=${market_local}`,
-	// 	headers: {
-	// 		'Authorization': `KaKaoAK ${process.env.REST_KEY}`
-	// 	}
-	// };
+	let options = {
+		url: `https://dapi.kakao.com/v2/local/search/address.json?query=${market_address}`,
+		headers: {
+			'Authorization': `KaKaoAK ${process.env.REST_KEY}`
+		}
+	};
+	app.get(options, (req, body, res) => {
+		if (err) throw err;
 
-	// app.get(options, (req, body, res) => {
-	// 	if (err) throw err;
+		const bodyObject = JSON.parse(body);
 
-	// 	const bodyObject = JSON.parse(body);
-
-	// 	console.log("nothing here");
-	// 	console.log(bodyObject);
-	// 	res.json({
-	// 		user: user_local,
-	// 		market: bodyObject
-	// 	});
-	// 	return 0;
-	// });
+		console.log(bodyObject);
+		res.json({
+			user: user_local,
+			market: bodyObject
+		});
+		return 0;
+	});
 
 });
 
