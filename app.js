@@ -286,7 +286,7 @@ function getLocal(user, address) {
 		},
 		url: `https://dapi.kakao.com/v2/local/search/address.json?query=` + encodeURI(address),
 	};
-	request.get(options, (err, err, body) => {
+	request.get(options, (err, res, body) => {
 		data = JSON.parse(body);
 	});
 	return {
@@ -329,7 +329,7 @@ app.get("/map:user_id/:market_id", (req, res, next) => {
 		if (result != null) {
 			market_address = result[0].address;
 			console.log(encodeURI(market_address));
-			res.send(getLocal(user_local, market_address));
+			res.json(getLocal(user_local, market_address));
 		} else {
 			console.log("nothing here");
 			res.send("nothing here");
