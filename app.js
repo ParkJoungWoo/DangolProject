@@ -277,15 +277,29 @@ app.delete("/user:user_id/delete", (req, res) => {
 	});
 });
 //위치 데이터 받기
+function getLocal(market_address, callback){
+	let options;
+	let data;
+	options = {
+		headers: {
+			Authorization: 'KakaoAK 7ad583a800060a5dc0f42a89897b2c5c'
+		}, url: `https://dapi.kakao.com/v2/local/search/address.json?query=` + encodeURI(market_address),
+	};
+	request.get(options, (err, err, body) => {
+		data = JSON.parse(body);
+		return callback(null, {
+			"market_local": [data.documents[0].x, data.documents[0].y],
+			"user_local": user_local
+		});
+		
+	});
+}
 app.get("/map:user_id/:market_id", (req, res, next) => {
 	let user_id = req.params.user_id;
 	let market_id = req.params.market_id;
 
 	let user_local;
 	let market_address;
-
-	let options;
-	let data;
 
 	model.User.findAll({
 		where: {
@@ -297,10 +311,10 @@ app.get("/map:user_id/:market_id", (req, res, next) => {
 				next();
 			} else {
 				user_local = result[0].local;
-				//res.send("no info")
+				res.send("no info")
 			}
 		} else {
-			//res.send("nothing here");
+			res.send("nothing here");
 			return 1;
 		}
 	}).catch(err => {
@@ -315,20 +329,7 @@ app.get("/map:user_id/:market_id", (req, res, next) => {
 		if (result != null) {
 			market_address = result[0].address;
 			console.log(encodeURI(market_address));
-			options = {
-				headers: {
-					Authorization: 'KakaoAK 7ad583a800060a5dc0f42a89897b2c5c'
-				}, url: `https://dapi.kakao.com/v2/local/search/address.json?query=` + encodeURI(market_address),
-			};
-			request.get(options, (err, err, body) => {
-				data = JSON.parse(body);
-				return callback({
-					"market_local": [data.documents[0].x, data.documents[0].y],
-					"user_local": user_local
-				});
-				
-			});
-			return 0;
+			getLocal(market_address);
 		} else {
 			console.log("nothing here");
 			res.send("nothing here");
