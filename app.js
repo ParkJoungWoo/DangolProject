@@ -288,11 +288,12 @@ function getLocal(user, address) {
 	};
 	request.get(options, (err, res, body) => {
 		data = JSON.parse(body);
-	});
+	console.log(data);
 	return {
 		"market_local": [data.documents[0].x, data.documents[0].y],
 		"user_local": user
 	};
+	});
 }
 app.get("/map:user_id/:market_id", (req, res, next) => {
 	let user_id = req.params.user_id;
@@ -308,7 +309,6 @@ app.get("/map:user_id/:market_id", (req, res, next) => {
 	}).then(result => {
 		if (result != null) {
 			if (result[0].local == null) {
-				next();
 			} else {
 				user_local = result[0].local;
 				res.send("no info")
@@ -329,7 +329,8 @@ app.get("/map:user_id/:market_id", (req, res, next) => {
 		if (result != null) {
 			market_address = result[0].address;
 			console.log(encodeURI(market_address));
-			res.json(getLocal(user_local, market_address));
+			res.json({1:1});
+			//res.json(getLocal(user_local, market_address));
 		} else {
 			console.log("nothing here");
 			res.send("nothing here");
