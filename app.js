@@ -314,9 +314,9 @@ app.get("/map:user_id/:market_id", (req, res, next) => {
 				url: `https://dapi.kakao.com/v2/local/search/address.json?query=${market_address}`,
 				headers: {
 					'Authorization': `KaKaoAK ${process.env.REST_KEY}`
-					}
+				}
 			};
-			res.redirect(options,`/map"${user_local}"/${market_address}`);
+			res.redirect(options, `/map"${user_local}"/${market_address}`);
 			return 0;
 		} else {
 			console.log("nothing here");
@@ -328,18 +328,20 @@ app.get("/map:user_id/:market_id", (req, res, next) => {
 	});
 	return 0;
 });
-app.get("/map:user_local/:market_address", (req, res, next) => {
+
+app.get("/map:user_local/:market_address", (req, options, res) => {
 	let user_local = req.params.user_local;
 	let market_address = req.params.market_address;
+	console.log(user_local);
 	console.log(market_address);
 	request.get({
 		url: options.url,
 		headers: options.headers
 	}, (err, res, data) => {
 		if (err) {
-		console.log(err);
+			console.log(err);
 		} else if (res.statusCode !== 200) {
-		console.log(res.statusCode);
+			console.log(res.statusCode);
 		} else {
 			/*
 			res.json({
