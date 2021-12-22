@@ -315,7 +315,7 @@ app.get("/map:user_id/:market_id", (req, res, next) => {
 			options = {
 				url: `https://dapi.kakao.com/v2/local/search/address.json?query=${market_address}`,
 				headers: {
-					'Authorization': `KaKaoAK ${process.env.REST_KEY}`
+					'Authorization': `KaKaoAK 7ad583a800060a5dc0f42a89897b2c5c`
 				}
 			};
 			request.get(options, (err, res, body) => {
