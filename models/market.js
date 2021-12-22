@@ -29,19 +29,19 @@ module.exports = (sequelize, DataTypes) => {
 			allowNull: false
 		},
 		M_1: {
-			type: DataTypes.INTEGER,
+			type: DataTypes.FLOAT,
 			allowNull: true
 		},
 		M_2: {
-			type: DataTypes.INTEGER,
+			type: DataTypes.FLOAT,
 			allowNull: true
 		},
 		M_3: {
-			type: DataTypes.INTEGER,
+			type: DataTypes.FLOAT,
 			allowNull: true
 		},
 		M_4: {
-			type: DataTypes.INTEGER,
+			type: DataTypes.FLOAT,
 			allowNull: true
 		},
 		foodtag: {

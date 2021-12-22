@@ -200,6 +200,20 @@ app.get("/userAll", (req, res) => {
 		console.log(err);
 	});
 });
+//유저 DB 일부 전송
+app.get("/user:user_id", (req, res) => {
+	let user_id = req.params.user_id;
+	model.User.findAll({
+		where: {
+			"user_id" : user_id
+		}
+	}).then(result => {
+		res.send(result);
+		return result;
+	}).catch(err => {
+		console.log(err);
+	});
+});
 //유저 DB 일부 수정(유저)
 app.put("/user:user_id/edit", (req, res) => {
 	let user_id = req.params.user_id;
@@ -232,6 +246,30 @@ app.get("/user:user_id/review", (req, res) => {
 	}).then(result => {
 		res.json(result);
 		return result;
+	}).catch(err => {
+		console.log(err);
+	});
+});
+//유저 DB 일부 삭제
+app.delete("/user:user_id/delete", (req, res) => {
+	let user_id = req.params.user_id;
+	let market_id = req.params.market_id;
+	model.User.findAll({
+		where: {
+			"user_id": user_id
+		}
+	}).then(result => {
+		if(result == null)
+			res.send(`${user_id}는 존재하지 않습니다.`);
+	}).catch(err => {
+	});
+
+	model.User.destroy({
+		where: {
+			"user_id": user_id
+		}
+	}).then(result => {
+		res.send(`${user_id}는 삭제되었습니다.`);
 	}).catch(err => {
 		console.log(err);
 	});
