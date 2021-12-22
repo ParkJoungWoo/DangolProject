@@ -5,7 +5,7 @@ const app = express();
 const model = require("./models");
 const sequelize = require("./models").sequelize;
 const cors = require('cors');
-
+const url = require('url');
 require("dotenv").config();
 sequelize.sync();
 const request = require('request');
@@ -282,6 +282,7 @@ app.get("/map:user_id/:market_id", (req, res, next) => {
 	let user_local;
 	let market_address;
 
+	let options;
 	model.User.findAll({
 		where: {
 			"user_id": user_id
@@ -309,7 +310,13 @@ app.get("/map:user_id/:market_id", (req, res, next) => {
 	}).then(result => {
 		if (result != null) {
 			market_address = result[0].address;
-			res.redirect(`/map${user_local}/${market_address}`);
+			options = {
+				url: `https://dapi.kakao.com/v2/local/search/address.json?query=${market_address}`,
+				headers: {
+					'Authorization': `KaKaoAK ${process.env.REST_KEY}`
+					}
+			};
+			res.redirect(options,`/map"${user_local}"/${market_address}`);
 			return 0;
 		} else {
 			console.log("nothing here");
@@ -324,12 +331,6 @@ app.get("/map:user_id/:market_id", (req, res, next) => {
 app.get("/map:user_local/:market_address", (req, res, next) => {
 	let user_local = req.params.user_local;
 	let market_address = req.params.market_address;
-	let options = {
-		url: `https://dapi.kakao.com/v2/local/search/address.json?query=${market_address}`,
-		headers: {
-			'Authorization': `KaKaoAK ${process.env.REST_KEY}`
-		}
-	};
 	console.log(market_address);
 	request.get({
 		url: options.url,
