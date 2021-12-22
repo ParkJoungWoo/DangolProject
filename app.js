@@ -275,7 +275,7 @@ app.delete("/user:user_id/delete", (req, res) => {
 	});
 });
 //위치 데이터 받기
-app.get("/map:user_id/:market_id", (req, res) => {
+app.get("/map:user_id/:market_id", (req, res, next) => {
 	let user_id = req.params.user_id;
 	let market_id = req.params.market_id;
 
