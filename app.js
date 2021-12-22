@@ -4,11 +4,13 @@ const express = require("express");
 const app = express();
 const model = require("./models");
 const sequelize = require("./models").sequelize;
+const request = require('request');
 const cors = require('cors');
 const url = require('url');
+
 require("dotenv").config();
 sequelize.sync();
-const request = require('request');
+
 app.use(express.static(`${__dirname}/src`));
 app.use(express.json());
 app.use(cors());
@@ -316,7 +318,10 @@ app.get("/map:user_id/:market_id", (req, res, next) => {
 					'Authorization': `KaKaoAK ${process.env.REST_KEY}`
 				}
 			};
-			res.redirect(options, `/map"${user_local}"/${market_address}`);
+			request.get(options, (err, res, body) => {
+				console.log(body);
+				return 0;
+			});
 			return 0;
 		} else {
 			console.log("nothing here");
