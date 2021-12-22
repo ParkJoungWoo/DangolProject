@@ -1,5 +1,5 @@
 "use strict";
-import dotenv from 'dotenv'
+// import dotenv from 'dotenv'
 const express = require("express");
 const app = express();
 const model = require("./models");
@@ -33,7 +33,7 @@ app.post("/fetchMarket", (req, res) => {
 			"weather": req.body[i].weather,
 			"image": req.body[i].image
 		});
-		res.send("입력완료");
+	res.send("입력완료");
 });
 //좋아요 개수 수정
 app.put("/heart:market_id/:number", (req, res) => {
@@ -81,12 +81,12 @@ app.get("/market:number", (req, res) => {
 //리뷰 입력
 app.post("/fetchReview", (req, res) => {
 	for (let i = 0; i < req.body.length; i++)
-	model.Review.create({
-		"market_id": req.body[i].market_id,
-		"user_id": req.body[i].user_id,
-		"star_num": req.body[i].star_num,
-		"content": req.body[i].content
-	});
+		model.Review.create({
+			"market_id": req.body[i].market_id,
+			"user_id": req.body[i].user_id,
+			"star_num": req.body[i].star_num,
+			"content": req.body[i].content
+		});
 	res.send("입력완료");
 });
 //리뷰 DB 모두 전송
@@ -136,7 +136,7 @@ app.put("/review:market_id/:user_id", (req, res) => {
 	let user_id = req.params.user_id;
 	model.Market.update({
 		star_num: req.body.star_num,
-		content : req.body.content
+		content: req.body.content
 	}, {
 		where: {
 			market_id: market_id,
@@ -159,10 +159,9 @@ app.delete("/review:market_id/:user_id", (req, res) => {
 			"market_id": market_id
 		}
 	}).then(result => {
-		if(result == null)
-		res.send(`${market_id}의 식당에 ${user_id}가 쓴 리뷰는 존재하지 않습니다.`);
-	}).catch(err => {
-	});
+		if (result == null)
+			res.send(`${market_id}의 식당에 ${user_id}가 쓴 리뷰는 존재하지 않습니다.`);
+	}).catch(err => {});
 
 	model.Review.destroy({
 		where: {
@@ -179,16 +178,16 @@ app.delete("/review:market_id/:user_id", (req, res) => {
 //유저 DB 입력
 app.post("/fetchUser", (req, res) => {
 	for (let i = 0; i < req.body.length; i++)
-	model.User.create({
-		"user_id": req.body[i].user_id,
-		"tag_list": req.body[i].tag_list,
-		"like_list": req.body[i].like_list,
-		"M_1": req.body[i].M_1,
-		"M_2": req.body[i].M_2,
-		"M_3": req.body[i].M_3,
-		"M_4": req.body[i].M_4,
-		"local": req.body[i].local
-	});
+		model.User.create({
+			"user_id": req.body[i].user_id,
+			"tag_list": req.body[i].tag_list,
+			"like_list": req.body[i].like_list,
+			"M_1": req.body[i].M_1,
+			"M_2": req.body[i].M_2,
+			"M_3": req.body[i].M_3,
+			"M_4": req.body[i].M_4,
+			"local": req.body[i].local
+		});
 	res.send("입력완료");
 });
 //유저 DB 전송
@@ -207,7 +206,7 @@ app.get("/user:user_id", (req, res) => {
 	let user_id = req.params.user_id;
 	model.User.findAll({
 		where: {
-			"user_id" : user_id
+			"user_id": user_id
 		}
 	}).then(result => {
 		res.send(result);
@@ -261,10 +260,9 @@ app.delete("/user:user_id/delete", (req, res) => {
 			"user_id": user_id
 		}
 	}).then(result => {
-		if(result == null)
+		if (result == null)
 			res.send(`${user_id}는 존재하지 않습니다.`);
-	}).catch(err => {
-	});
+	}).catch(err => {});
 
 	model.User.destroy({
 		where: {
@@ -277,7 +275,7 @@ app.delete("/user:user_id/delete", (req, res) => {
 	});
 });
 //위치 데이터 받기
-app.get("/map:user_id/:market_id", (req, res) =>{
+app.get("/map:user_id/:market_id", (req, res) => {
 	let user_id = req.params.user_id;
 	let market_id = req.params.market_id;
 
@@ -286,18 +284,19 @@ app.get("/map:user_id/:market_id", (req, res) =>{
 
 	let options;
 
-
 	model.User.findAll({
 		where: {
-			"user_id" : user_id
+			"user_id": user_id
 		}
 	}).then(result => {
-		if(result != null)
-		{
+		if (result != null) {
 			user_local = result[0].local;
-		}
-		else
+			next();
+		} else {
+			console.log("nothing here");
 			res.send("nothing here");
+			return 1;
+		}
 	}).catch(err => {
 		console.log(err);
 	});
@@ -306,31 +305,38 @@ app.get("/map:user_id/:market_id", (req, res) =>{
 			id: market_id
 		}
 	}).then(result => {
-		if(result != null)
-		{
+		if (result != null) {
 			market_local = result[0].address;
-		}
-		else
+			next();
+		} else {
+			console.log("nothing here");
 			res.send("nothing here");
+			return 1;
+		}
 	}).catch(err => {
 		console.log(err);
 	});
 
 	options = {
-        url: `https://dapi.kakao.com/v2/local/search/address.json?query=${market_local}`,
-        headers: { 'Authorization': `KaKaoAK ${process.env.REST_KEY}` }
-    };
+		url: `https://dapi.kakao.com/v2/local/search/address.json?query=${market_local}`,
+		headers: {
+			'Authorization': `KaKaoAK ${process.env.REST_KEY}`
+		}
+	};
 
-    app.get(options, (req, body, res) => {
-        if (err) throw err;
+	app.get(options, (req, body, res) => {
+		if (err) throw err;
 
-        const bodyObject = JSON.parse(body);
+		const bodyObject = JSON.parse(body);
 
-        res.json({
-            user : user_local,
-			market : bodyObject
-        })
-    })
+		console.log("nothing here");
+		console.log(bodyObject);
+		res.json({
+			user: user_local,
+			market: bodyObject
+		});
+		return 0;
+	})
 
 });
 
