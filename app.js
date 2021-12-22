@@ -292,12 +292,12 @@ app.get("/map:user_id/:market_id", (req, res, next) => {
 				user_local = result[0].local;
 				next();
 			} else {
-				res.send("no info")
+				//res.send("no info")
 				return 1;
 			}
 		} else {
 			console.log("nothing here");
-			res.send("nothing here");
+			//res.send("nothing here");
 			return 1;
 		}
 	}).catch(err => {
@@ -311,7 +311,8 @@ app.get("/map:user_id/:market_id", (req, res, next) => {
 	}).then(result => {
 		if (result !== null) {
 			market_address = result[0].address;
-			res.redirect(`/map${user_local}/${market_address}`)
+			res.redirect(`/map${user_local}/${market_address}`);
+			return 0;
 		} else {
 			console.log("nothing here");
 			res.send("nothing here");
@@ -320,6 +321,7 @@ app.get("/map:user_id/:market_id", (req, res, next) => {
 	}).catch(err => {
 		console.log(err);
 	});
+	return 0;
 });
 app.get("/map:user_local/:market_address", (req, res, next) => {
 	let user_local = req.params.user_local;
@@ -331,6 +333,7 @@ app.get("/map:user_local/:market_address", (req, res, next) => {
 			'Authorization': `KaKaoAK ${process.env.REST_KEY}`
 		}
 	};
+	/*
 	request.get({
 		url: options.url,
 		headers: options.headers
@@ -343,6 +346,7 @@ app.get("/map:user_local/:market_address", (req, res, next) => {
 		}
 
 	});
+	*/
 
 });
 
