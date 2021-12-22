@@ -6,7 +6,7 @@ const model = require("./models");
 const sequelize = require("./models").sequelize;
 const cors = require('cors');
 
-dotenv.config();
+require("dotenv").config();
 sequelize.sync();
 
 app.use(express.static(`${__dirname}/src`));
