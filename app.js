@@ -277,7 +277,7 @@ app.delete("/user:user_id/delete", (req, res) => {
 	});
 });
 //위치 데이터 받기
-function getLocal(market_address, callback){
+function getLocal(user_local, market_address){
 	let options;
 	let data;
 	options = {
@@ -287,10 +287,10 @@ function getLocal(market_address, callback){
 	};
 	request.get(options, (err, err, body) => {
 		data = JSON.parse(body);
-		return callback(null, {
+		return {
 			"market_local": [data.documents[0].x, data.documents[0].y],
 			"user_local": user_local
-		});
+		};
 		
 	});
 }
@@ -329,7 +329,7 @@ app.get("/map:user_id/:market_id", (req, res, next) => {
 		if (result != null) {
 			market_address = result[0].address;
 			console.log(encodeURI(market_address));
-			getLocal(market_address);
+			res.send(getLocal(user_local, market_address))
 		} else {
 			console.log("nothing here");
 			res.send("nothing here");
