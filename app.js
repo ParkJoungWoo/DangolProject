@@ -353,7 +353,7 @@ app.get("/map:user_id/:market_id", async (req, res) => {
 
 	let result = await{
 		"user" : user_local,
-		"market" : [localfull.data.documents[0].address.x, localfull.data.documents[0].address.y]
+		"market" : [parseFloat(localfull.data.documents[0].address.x), parseFloat(localfull.data.documents[0].address.y)]
 	};
 	res.send(result);
 	return 0;
