@@ -89,7 +89,7 @@ app.put("/market:market_id/edit", (req, res) => {
 		"M_4": req.body.M_4
 	}, {
 		where: {
-			"user_id": market_id
+			"id": market_id
 		}
 	}).then(result => {
 		res.json(result);
@@ -296,7 +296,7 @@ app.delete("/user:user_id/delete", (req, res) => {
 	});
 });
 //위치 데이터 받기
-function getLocal(user, address) {
+async function getLocal(user, address) {
 	let options;
 	let data;
 	options = {
@@ -309,10 +309,10 @@ function getLocal(user, address) {
 	request.get(options, (err, res, body) => {
 		data = JSON.parse(body);
 		console.log(data);
-		return {
-			"market_local": [data.documents[0].x, data.documents[0].y],
-			"user_local": user
-		};
+		return `{
+			"market_local": [${data.documents[0].x}, ${data.documents[0].y}],
+			"user_local": ${user}
+		}`;
 	});
 }
 app.get("/map:user_id/:market_id", (req, res, next) => {
@@ -331,7 +331,7 @@ app.get("/map:user_id/:market_id", (req, res, next) => {
 			if (result[0].local == null) {
 			} else {
 				user_local = result[0].local;
-				res.send("no info")
+	//			res.send("no info")
 			}
 		} else {
 			res.send("nothing here");
@@ -348,8 +348,8 @@ app.get("/map:user_id/:market_id", (req, res, next) => {
 	}).then(result => {
 		if (result != null) {
 			market_address = result[0].address;
-			console.log(encodeURI(market_address));
-			res.json({1:1});
+			let jsontest = getLocal(user_local, marekt_address);
+			console.log(jsontest);
 			//res.json(getLocal(user_local, market_address));
 		} else {
 			console.log("nothing here");
