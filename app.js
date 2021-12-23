@@ -7,6 +7,7 @@ const sequelize = require("./models").sequelize;
 const request = require('request');
 const cors = require('cors');
 const url = require('url');
+const axios = require('axios');
 
 require("dotenv").config();
 sequelize.sync();
@@ -296,7 +297,19 @@ app.delete("/user:user_id/delete", (req, res) => {
 	});
 });
 //위치 데이터 받기
-async function getLocal(user, address) {
+const getLocal = () => {
+	options = {
+		headers: {
+			Authorization: 'KakaoAK 7ad583a800060a5dc0f42a89897b2c5c'
+		},
+		url: `https://dapi.kakao.com/v2/local/search/address.json?query=` + encodeURI(address),
+	};
+	try{
+		return axios.get(options.headers, options.url);
+	}
+	catch (err) {}
+};
+async function getLLocal(user, address){
 	let options;
 	let data;
 	options = {
@@ -305,16 +318,17 @@ async function getLocal(user, address) {
 		},
 		url: `https://dapi.kakao.com/v2/local/search/address.json?query=` + encodeURI(address),
 	};
-	
-	request.get(options, (err, res, body) => {
+/*	
+	await request.get(options, (err, res, body) => {
 		data = JSON.parse(body);
 		console.log(data);
-		return `{
+		res.end(`{
 			"market_local": [${data.documents[0].x}, ${data.documents[0].y}],
 			"user_local": ${user}
-		}`;
+		}`);
 	});
-}
+*/
+};
 app.get("/map:user_id/:market_id", async (req, res) => {
 	let user_id = req.params.user_id;
 	let market_id = req.params.market_id;
@@ -329,18 +343,17 @@ app.get("/map:user_id/:market_id", async (req, res) => {
 	}).then(result => {
 		if (result != null) {
 			if (result[0].local == null) {
+				user_local = [0, 0];
 			} else {
 				user_local = result[0].local;
-	//			res.send("no info")
 			}
 		} else {
-			res.send("nothing here");
-			return 1;
+			return res.send("nothing here");
 		}
 	}).catch(err => {
 		console.log(err);
 	});
-
+	
 	await model.Market.findAll({
 		where: {
 			id: market_id
@@ -348,17 +361,15 @@ app.get("/map:user_id/:market_id", async (req, res) => {
 	}).then(result => {
 		if (result != null) {
 			market_address = result[0].address;
-			let jsontest = await getLocal(user_local, marekt_address);
-			console.log(jsontest);
 			//res.json(getLocal(user_local, market_address));
 		} else {
-			console.log("nothing here");
-			res.send("nothing here");
-			return 1;
+			return res.send("nothing here");
 		}
 	}).catch(err => {
 		console.log(err);
 	});
+	let jsontest = await getLocal(user_local, market_address);
+	console.log(jsontest);
 	return 0;
 });
 
