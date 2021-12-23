@@ -6,7 +6,7 @@ const model = require("./models");
 const sequelize = require("./models").sequelize;
 const request = require('request');
 const cors = require('cors');
-const axios = require('axios');
+//const axios = require('axios');
 
 require("dotenv").config();
 sequelize.sync();
@@ -353,20 +353,23 @@ app.get("/map:user_id/:market_id", (req, res) => {
 			}).then(result => {
 				if (result != null) {
 					market_address = result[0].address;
-					options = {
+					let stringer;
+					let options = {
 						headers: {
 							Authorization: 'KakaoAK 7ad583a800060a5dc0f42a89897b2c5c'
 						},
-						url: `https://dapi.kakao.com/v2/local/search/address.json?query=` + encodeURI(address),
+						url: `https://dapi.kakao.com/v2/local/search/address.json?query=` + encodeURI(market_address),
 					};
-					await request.get(options, (err, res, body) => {
-						data = JSON.parse(body);
-						console.log(data);
-						res.send(`{
-									"market_local": [${data.documents[0].x}, ${data.documents[0].y}],
-									"user_local": ${user}
-								}`);
+					let tester = request.get(options, (err, next, body) => {
+					let data = JSON.parse(body);
+					stringer = `{
+						"market_local": [${data.documents[0].x}, ${data.documents[0].y}],
+									"user_local": ${user_local}
+					}`;
+						next();
 					});
+					console.log(stringer);
+					res.send(stringer);
 				} else {
 					return res.send("nothing here");
 				}
