@@ -342,21 +342,21 @@ async function kakaodata(user_local, market_name, callback) {
 		},
 		url: `https://dapi.kakao.com/v2/local/search/address.json?query=` + encodeURI(market_name),
 	};
-	fetch(options.url, options.headers).then(function(response){
-		stringer = response.json();
-		return response.json();
+	
+	await request.get(options, (err, res, body) => {
+		let data = JSON.parse(body);
+		stringer = {
+			"market_local": [`${data.documents[0].x}`, `${data.documents[0].y}`],
+			"user_local": [`${user_local}`]
+		};
+		getter(stringer);
 	});
-	// await request.get(options, (err, res, body) => {
-	// 	let data = JSON.parse(body);
-	// 	stringer = {
-	// 		"market_local": [`${data.documents[0].x}`, `${data.documents[0].y}`],
-	// 		"user_local": [`${user_local}`]
-	// 	};
-	// 	callback(null, stringer);
-	// });
 	return stringer;
 }
+async function getter(data) {
 
+	return data;
+}
 app.get("/map:user_id/:market_id", async (req, res) => {
 	let user_id = req.params.user_id;
 	let market_id = req.params.market_id;
