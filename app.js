@@ -295,45 +295,9 @@ app.delete("/user:user_id/delete", (req, res) => {
 		console.log(err);
 	});
 });
-//위치 데이터 받기
-// const getLocal = (address) => {
-// 	options = {
-// 		headers: {
-// 			Authorization: 'KakaoAK 7ad583a800060a5dc0f42a89897b2c5c'
-// 		},
-// 		url: `https://dapi.kakao.com/v2/local/search/address.json?query=` + encodeURI(address),
-// 	};
-// 	try{
-// 		return axios.get(options.url, {params : options.headers});
-// 	}
-// 	catch (err) {}
-// };
-
-// async function getLLocal(user, address){
-// 	let options;
-// 	let data;
-// 	options = {
-// 		headers: {
-// 			Authorization: 'KakaoAK 7ad583a800060a5dc0f42a89897b2c5c'
-// 		},
-// 		url: `https://dapi.kakao.com/v2/local/search/address.json?query=` + encodeURI(address),
-// 	};
-// 	await request.get(options, (err, res, body) => {
-// 		data = JSON.parse(body);
-// 		console.log(data);
-// 		res.end(`{
-// 			"market_local": [${data.documents[0].x}, ${data.documents[0].y}],
-// 			"user_local": ${user}
-// 		}`);
-// 	});
-// };
-app.get("/map:user_id/:market_id", (req, res) => {
-	let user_id = req.params.user_id;
-	let market_id = req.params.market_id;
-
-	let user_local = null;
-	let market_address = null;
-	//유저 검색
+//유저 위치 검색
+function userSearch(user_id) {
+	let user_local;
 	model.User.findAll({
 		where: {
 			"user_id": user_id
@@ -345,43 +309,57 @@ app.get("/map:user_id/:market_id", (req, res) => {
 			} else {
 				user_local = result[0].local;
 			}
-			//식당검색
-			model.Market.findAll({
-				where: {
-					id: market_id
-				}
-			}).then(result => {
-				if (result != null) {
-					market_address = result[0].address;
-					let options = {
-						headers: {
-							Authorization: 'KakaoAK 7ad583a800060a5dc0f42a89897b2c5c'
-						},
-						url: `https://dapi.kakao.com/v2/local/search/address.json?query=` + encodeURI(market_address),
-					};
-					let tester = request.get(options, (err, res, body) => {
-					let data = JSON.parse(body);
-					let stringer = {
-						"market_local": [`${data.documents[0].x}`, `${data.documents[0].y}`],
-									"user_local": [`${user_local}`]
-					};
-					app.get("/", (req, res) => { res.json(stringer); return 0;});
-					});
-					tester.redirect;
-					res.redirect("/");
-					return 0;
-				} else {
-					return res.send("nothing here");
-				}
-			}).catch(err => {
-				console.log(err);
-			});
+		}
+	}).catch(err => {
+		console.log(err);
+	});
+	return user_local
+}
+
+//식당검색
+function marketSearch(market_id) {
+	let market_name;
+	model.Market.findAll({
+		where: {
+			id: market_id
+		}
+	}).then(result => {
+		if (result != null) {
+			market_name = result[0].address;
 		} else {
 			return res.send("nothing here");
 		}
 	}).catch(err => {
 		console.log(err);
 	});
+	return market_name;
+}
+
+
+app.get("/map:user_id/:market_id", (req, res) => {
+	let user_id = req.params.user_id;
+	let market_id = req.params.market_id;
+
+	let user_local = userSearch(user_id);
+	let market_name = marketSearch(market_id);
+	let options = {
+		headers: {
+			Authorization: 'KakaoAK 7ad583a800060a5dc0f42a89897b2c5c'
+		},
+		url: `https://dapi.kakao.com/v2/local/search/address.json?query=` + encodeURI(market_name),
+	};
+	request.get(options, (err, res, body) => {
+		let data = JSON.parse(body);
+		let stringer = {
+			"market_local": [`${data.documents[0].x}`, `${data.documents[0].y}`],
+			"user_local": [`${user_local}`]
+		};
+		app.get("/", (req, res) => {
+			res.json(stringer);
+			return 0;
+		});
+	});
+	redirect("/");
 	return 0;
 });
 
