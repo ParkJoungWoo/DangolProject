@@ -297,7 +297,7 @@ app.delete("/user:user_id/delete", (req, res) => {
 	});
 });
 //위치 데이터 받기
-const getLocal = () => {
+const getLocal = (address) => {
 	options = {
 		headers: {
 			Authorization: 'KakaoAK 7ad583a800060a5dc0f42a89897b2c5c'
@@ -305,30 +305,28 @@ const getLocal = () => {
 		url: `https://dapi.kakao.com/v2/local/search/address.json?query=` + encodeURI(address),
 	};
 	try{
-		return axios.get(options.headers, options.url);
+		return axios.get(options.url, options.headers);
 	}
 	catch (err) {}
 };
-async function getLLocal(user, address){
-	let options;
-	let data;
-	options = {
-		headers: {
-			Authorization: 'KakaoAK 7ad583a800060a5dc0f42a89897b2c5c'
-		},
-		url: `https://dapi.kakao.com/v2/local/search/address.json?query=` + encodeURI(address),
-	};
-/*	
-	await request.get(options, (err, res, body) => {
-		data = JSON.parse(body);
-		console.log(data);
-		res.end(`{
-			"market_local": [${data.documents[0].x}, ${data.documents[0].y}],
-			"user_local": ${user}
-		}`);
-	});
-*/
-};
+// async function getLLocal(user, address){
+// 	let options;
+// 	let data;
+// 	options = {
+// 		headers: {
+// 			Authorization: 'KakaoAK 7ad583a800060a5dc0f42a89897b2c5c'
+// 		},
+// 		url: `https://dapi.kakao.com/v2/local/search/address.json?query=` + encodeURI(address),
+// 	};
+// 	await request.get(options, (err, res, body) => {
+// 		data = JSON.parse(body);
+// 		console.log(data);
+// 		res.end(`{
+// 			"market_local": [${data.documents[0].x}, ${data.documents[0].y}],
+// 			"user_local": ${user}
+// 		}`);
+// 	});
+// };
 app.get("/map:user_id/:market_id", async (req, res) => {
 	let user_id = req.params.user_id;
 	let market_id = req.params.market_id;
@@ -361,6 +359,8 @@ app.get("/map:user_id/:market_id", async (req, res) => {
 	}).then(result => {
 		if (result != null) {
 			market_address = result[0].address;
+			let test = getLocal(market_address);
+			console.log(test);
 			//res.json(getLocal(user_local, market_address));
 		} else {
 			return res.send("nothing here");
@@ -368,8 +368,6 @@ app.get("/map:user_id/:market_id", async (req, res) => {
 	}).catch(err => {
 		console.log(err);
 	});
-	let jsontest = await getLocal(user_local, market_address);
-	console.log(jsontest);
 	return 0;
 });
 
