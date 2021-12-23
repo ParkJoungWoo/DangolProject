@@ -315,14 +315,14 @@ async function getLocal(user, address) {
 		}`;
 	});
 }
-app.get("/map:user_id/:market_id", (req, res, next) => {
+app.get("/map:user_id/:market_id", async (req, res) => {
 	let user_id = req.params.user_id;
 	let market_id = req.params.market_id;
 
 	let user_local;
 	let market_address;
 
-	model.User.findAll({
+	await model.User.findAll({
 		where: {
 			"user_id": user_id
 		}
@@ -341,14 +341,14 @@ app.get("/map:user_id/:market_id", (req, res, next) => {
 		console.log(err);
 	});
 
-	model.Market.findAll({
+	await model.Market.findAll({
 		where: {
 			id: market_id
 		}
 	}).then(result => {
 		if (result != null) {
 			market_address = result[0].address;
-			let jsontest = getLocal(user_local, marekt_address);
+			let jsontest = await getLocal(user_local, marekt_address);
 			console.log(jsontest);
 			//res.json(getLocal(user_local, market_address));
 		} else {
