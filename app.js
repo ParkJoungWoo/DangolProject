@@ -341,11 +341,7 @@ async function kakaodata(user_local, market_name, callback) {
 		},
 		url: `https://dapi.kakao.com/v2/local/search/address.json?query=` + encodeURI(market_name),
 	};
-	const promise = axios.get(options.url, options.headers);
-	console.log(promise);
-	const dataPromise = promise.then((response) => response);
-	console.log(dataPromise);
-	return dataPromise;
+	return await axios.get(options.url, { headers : options.headers });
 };
 app.get("/map:user_id/:market_id", async (req, res) => {
 	let user_id = req.params.user_id;
@@ -353,15 +349,13 @@ app.get("/map:user_id/:market_id", async (req, res) => {
 
 	let user_local = await userSearch(user_id);
 	let market_name = await marketSearch(market_id);
-	let localfull;
-	if(user_local != null)
-		localfull = await kakaodata(user_local, market_name);
+	let localfull = await kakaodata(user_local, market_name);
 
-	console.log(user_local);
-	console.log(market_name);
-	console.log(localfull);
-
-	res.send(localfull);
+	let result = await{
+		"user" : user_local,
+		"market" : [localfull.data.documents[0].address.x, localfull.data.documents[0].address.y]
+	};
+	res.send(result);
 	return 0;
 });
 
