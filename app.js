@@ -79,6 +79,25 @@ app.get("/market:number", (req, res) => {
 		console.log(err);
 	});
 });
+//식당 DB 일부 수정
+app.put("/market:market_id/edit", (req, res) => {
+	let market_id = req.params.market_id;
+	model.Market.update({
+		"M_1": req.body.M_1,
+		"M_2": req.body.M_2,
+		"M_3": req.body.M_3,
+		"M_4": req.body.M_4
+	}, {
+		where: {
+			"user_id": market_id
+		}
+	}).then(result => {
+		res.json(result);
+		return result;
+	}).catch(err => {
+		console.log(err);
+	});
+});
 //Review
 //리뷰 입력
 app.post("/fetchReview", (req, res) => {
@@ -286,13 +305,14 @@ function getLocal(user, address) {
 		},
 		url: `https://dapi.kakao.com/v2/local/search/address.json?query=` + encodeURI(address),
 	};
+	
 	request.get(options, (err, res, body) => {
 		data = JSON.parse(body);
-	console.log(data);
-	return {
-		"market_local": [data.documents[0].x, data.documents[0].y],
-		"user_local": user
-	};
+		console.log(data);
+		return {
+			"market_local": [data.documents[0].x, data.documents[0].y],
+			"user_local": user
+		};
 	});
 }
 app.get("/map:user_id/:market_id", (req, res, next) => {
