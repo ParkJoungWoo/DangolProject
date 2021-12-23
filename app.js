@@ -296,18 +296,19 @@ app.delete("/user:user_id/delete", (req, res) => {
 	});
 });
 //위치 데이터 받기
-const getLocal = (address) => {
-	options = {
-		headers: {
-			Authorization: 'KakaoAK 7ad583a800060a5dc0f42a89897b2c5c'
-		},
-		url: `https://dapi.kakao.com/v2/local/search/address.json?query=` + encodeURI(address),
-	};
-	try{
-		return axios.get(options.url, {params : options.headers});
-	}
-	catch (err) {}
-};
+// const getLocal = (address) => {
+// 	options = {
+// 		headers: {
+// 			Authorization: 'KakaoAK 7ad583a800060a5dc0f42a89897b2c5c'
+// 		},
+// 		url: `https://dapi.kakao.com/v2/local/search/address.json?query=` + encodeURI(address),
+// 	};
+// 	try{
+// 		return axios.get(options.url, {params : options.headers});
+// 	}
+// 	catch (err) {}
+// };
+
 // async function getLLocal(user, address){
 // 	let options;
 // 	let data;
@@ -326,14 +327,14 @@ const getLocal = (address) => {
 // 		}`);
 // 	});
 // };
-app.get("/map:user_id/:market_id", async (req, res) => {
+app.get("/map:user_id/:market_id", (req, res) => {
 	let user_id = req.params.user_id;
 	let market_id = req.params.market_id;
 
 	let user_local;
 	let market_address;
-
-	await model.User.findAll({
+	//유저 검색
+	model.User.findAll({
 		where: {
 			"user_id": user_id
 		}
@@ -344,23 +345,34 @@ app.get("/map:user_id/:market_id", async (req, res) => {
 			} else {
 				user_local = result[0].local;
 			}
-		} else {
-			return res.send("nothing here");
-		}
-	}).catch(err => {
-		console.log(err);
-	});
-	
-	await model.Market.findAll({
-		where: {
-			id: market_id
-		}
-	}).then(result => {
-		if (result != null) {
-			market_address = result[0].address;
-			let test = getLocal(market_address);
-			console.log(test);
-			//res.json(getLocal(user_local, market_address));
+			//식당검색
+			model.Market.findAll({
+				where: {
+					id: market_id
+				}
+			}).then(result => {
+				if (result != null) {
+					market_address = result[0].address;
+					options = {
+						headers: {
+							Authorization: 'KakaoAK 7ad583a800060a5dc0f42a89897b2c5c'
+						},
+						url: `https://dapi.kakao.com/v2/local/search/address.json?query=` + encodeURI(address),
+					};
+					await request.get(options, (err, res, body) => {
+						data = JSON.parse(body);
+						console.log(data);
+						res.send(`{
+									"market_local": [${data.documents[0].x}, ${data.documents[0].y}],
+									"user_local": ${user}
+								}`);
+					});
+				} else {
+					return res.send("nothing here");
+				}
+			}).catch(err => {
+				console.log(err);
+			});
 		} else {
 			return res.send("nothing here");
 		}
