@@ -6,7 +6,7 @@ const model = require("./models");
 const sequelize = require("./models").sequelize;
 const request = require('request');
 const cors = require('cors');
-//const axios = require('axios');
+const axios = require('axios');
 
 require("dotenv").config();
 sequelize.sync();
@@ -335,25 +335,17 @@ async function marketSearch(market_id) {
 };
 //카카오에서 주소 가져오기
 async function kakaodata(user_local, market_name, callback) {
-	let stringer;
 	let options = {
 		headers: {
 			Authorization: 'KakaoAK 7ad583a800060a5dc0f42a89897b2c5c'
 		},
 		url: `https://dapi.kakao.com/v2/local/search/address.json?query=` + encodeURI(market_name),
 	};
-	
-	return {
-	request.get(options, (err, response, body) => {
-		let data = JSON.parse(body);
-		stringer = {
-			"market_local": [`${data.documents[0].x}`, `${data.documents[0].y}`],
-			"user_local": [`${user_local}`]
-		};
-	});
-
-	request.send();
-	});
+	const promise = axios.get(options.url, options.headers);
+	console.log(promise);
+	const dataPromise = promise.then((response) => response);
+	console.log(dataPromise);
+	return dataPromise;
 };
 app.get("/map:user_id/:market_id", async (req, res) => {
 	let user_id = req.params.user_id;
