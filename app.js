@@ -6,7 +6,6 @@ const model = require("./models");
 const sequelize = require("./models").sequelize;
 const request = require('request');
 const cors = require('cors');
-const url = require('url');
 const axios = require('axios');
 
 require("dotenv").config();
@@ -305,7 +304,7 @@ const getLocal = (address) => {
 		url: `https://dapi.kakao.com/v2/local/search/address.json?query=` + encodeURI(address),
 	};
 	try{
-		return axios.get(options.url, options.headers);
+		return axios.get(options.url, {params : options.headers});
 	}
 	catch (err) {}
 };
