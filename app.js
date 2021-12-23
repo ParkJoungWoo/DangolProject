@@ -314,7 +314,7 @@ async function userSearch(user_id) {
 		console.log(err);
 	});
 	return user_local
-}
+};
 //식당검색
 async function marketSearch(market_id) {
 	let market_name;
@@ -332,7 +332,7 @@ async function marketSearch(market_id) {
 		console.log(err);
 	});
 	return market_name;
-}
+};
 //카카오에서 주소 가져오기
 async function kakaodata(user_local, market_name, callback) {
 	let stringer;
@@ -343,31 +343,33 @@ async function kakaodata(user_local, market_name, callback) {
 		url: `https://dapi.kakao.com/v2/local/search/address.json?query=` + encodeURI(market_name),
 	};
 	
-	await request.get(options, (err, res, body) => {
+	return {
+	request.get(options, (err, response, body) => {
 		let data = JSON.parse(body);
 		stringer = {
 			"market_local": [`${data.documents[0].x}`, `${data.documents[0].y}`],
 			"user_local": [`${user_local}`]
 		};
-		getter(stringer);
 	});
-	return stringer;
-}
-async function getter(data) {
 
-	return data;
-}
+	request.send();
+	});
+};
 app.get("/map:user_id/:market_id", async (req, res) => {
 	let user_id = req.params.user_id;
 	let market_id = req.params.market_id;
 
 	let user_local = await userSearch(user_id);
 	let market_name = await marketSearch(market_id);
-	let localfull = await kakaodata(user_local, market_name);
+	let localfull;
+	if(user_local != null)
+		localfull = await kakaodata(user_local, market_name);
 
 	console.log(user_local);
 	console.log(market_name);
 	console.log(localfull);
+
+	res.send(localfull);
 	return 0;
 });
 
