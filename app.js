@@ -315,7 +315,6 @@ async function userSearch(user_id) {
 	});
 	return user_local
 }
-
 //식당검색
 async function marketSearch(market_id) {
 	let market_name;
@@ -343,15 +342,18 @@ async function kakaodata(user_local, market_name, callback) {
 		},
 		url: `https://dapi.kakao.com/v2/local/search/address.json?query=` + encodeURI(market_name),
 	};
-
-	await request.get(options, (err, res, body) => {
-		let data = JSON.parse(body);
-		stringer = {
-			"market_local": [`${data.documents[0].x}`, `${data.documents[0].y}`],
-			"user_local": [`${user_local}`]
-		};
-		callback(null, stringer);
+	fetch(options.url, options.headers).then(function(response){
+		stringer = response.json();
+		return response.json();
 	});
+	// await request.get(options, (err, res, body) => {
+	// 	let data = JSON.parse(body);
+	// 	stringer = {
+	// 		"market_local": [`${data.documents[0].x}`, `${data.documents[0].y}`],
+	// 		"user_local": [`${user_local}`]
+	// 	};
+	// 	callback(null, stringer);
+	// });
 	return stringer;
 }
 
