@@ -12,6 +12,7 @@ import numpy as np
 import pandas as pd
 import sys
 import copy
+import math
 import scipy
 import scipy.sparse
 import scipy.sparse.linalg
@@ -20,7 +21,6 @@ from sklearn.metrics.pairwise import cosine_similarity  # 코사인 유사도
 
 debug = 0
 id_input = int(sys.argv[1])
-print(len(sys.argv))
 if len(sys.argv)>=3:
   debug = int(sys.argv[2])
 
@@ -211,11 +211,11 @@ def main():
     print(svd_user_predicted_ratings)
     print()
   
-  temp = []
+  id_list = []
   for i in range(len(sample_res_to_dict)):
-    temp.append(sample_res_to_dict[i]['id'])
+    id_list.append(sample_res_to_dict[i]['id'])
 
-  svd_predict_df = pd.DataFrame(svd_user_predicted_ratings, columns=temp, index=user_id_list)
+  svd_predict_df = pd.DataFrame(svd_user_predicted_ratings, columns=id_list, index=user_id_list)
   
   if debug == 1:
     print("svd_predict_df")
@@ -263,23 +263,79 @@ def main():
   how_do_you_review = []
   for i in range(len(sample_review_to_dict)):
       if sample_review_to_dict[i]['user_id'] == id_input:
-          how_do_you_review.append([sample_review_to_dict[i]['market_id']-1, sample_review_to_dict[i]['star_num']-3])
+          how_do_you_review.append([sample_review_to_dict[i]['market_id'], sample_review_to_dict[i]['star_num']-3])
   
   score_cs = np.zeros((len(sample_res_to_dict)))
   for element in how_do_you_review:
       score_cs += place_simi_cate[element[0]]*element[1]/2
+
+  # 유저의 취향과 위치를 얻어냄
+  for user in sample_user_to_dict:
+    if id_input == user['user_id']:
+      user_tag = user['tag_list']
+      break
+
+  # 유저의 취향을 이용한 점수 계산
+  if user_tag:
+    score_tag = np.zeros((len(sample_res_to_dict)))
+    for i in range(len(sample_res_to_dict)):
+      for tag in user_tag:
+        if tag in sample_res_to_dict[i]['foodtag']:
+          score_tag[i] = (score_tag[i]+1)/2
+  else:
+    score_tag = np.ones((len(sample_res_to_dict)))
+  if max(score_tag)>0:
+    score_tag = score_tag/max(score_tag)
+  if debug == 1:
+    print("score using tag")
+    print(score_tag)
+    print()
+
+  # 식당까지의 거리를 이용한 점수 계산
+  location_url = requests.get("http://15.165.204.148:8080/mapAll"+str(id_input))
+  location_text = location_url.text
+  sample_location_to_dict = json.loads(location_text)
+  if debug == 1:
+    print("sample location to dict")
+    print(sample_location_to_dict)
+    print()
+  user_location = sample_location_to_dict[0]["user"]
+  if debug == 1:
+    print("user location")
+    print(user_location)
+    print()
+
+  if user_location:
+    score_loc = np.zeros((len(sample_location_to_dict)))
+    for i in range(len(sample_location_to_dict)):
+      res_location = sample_location_to_dict[i]['market']
+      if res_location:
+        score_loc[i] = math.sqrt(pow(user_location[0]-res_location[0],2)+pow(user_location[1]-res_location[1],2))
+    if not np.all((score_loc == 0)):
+      score_loc = distance_score(score_loc)
+    if debug == 1:
+      print("score location")
+      print(score_loc)
+  else:
+    score_loc = np.zeros((len(sample_res_to_dict)))
+    if debug == 1:
+      print("score location")
+      print(score_loc)
+
+
   if len(how_do_you_review) !=0:
     score_cs = score_cs/len(how_do_you_review)
+    score_cs = (score_cs-min(score_cs))/(max(score_cs)-min(score_cs))
     if debug == 1:
       print("score using CS")
       print(score_cs)
       print()
     score_final = copy.deepcopy(score_mf)
 
-    score_final[1] = (score_mf[1]/max(abs(score_mf[1]))+1)/2*30 + score_cs/max(score_cs)*70
+    score_final[1] = score_tag*10 + score_loc*10 + (score_mf[1]/max(abs(score_mf[1]))+1)/2*25 + score_cs/max(score_cs)*55
   else:
     score_final = copy.deepcopy(score_mf)
-    score_final[1] = (score_mf[1]/max(abs(score_mf[1]))+1)/2*100
+    score_final[1] = score_tag*30 + score_loc*20 + (score_mf[1]/max(abs(score_mf[1]))+1)/2*50
   
   
   score_final = pd.DataFrame(score_final)
@@ -351,6 +407,20 @@ def recommend_restaurants_old(svd_predict_df, user_id, user_res_rating, num_row=
   final_recommend = score_row.to_json()
   return final_recommend
   
+
+def distance_score(dis_array,para=3):
+  mean_dis = sum(dis_array)/len(dis_array)
+  for i in range(len(dis_array)):
+    if dis_array[i] == 0:
+      dis_array[i] = mean_dis
+  max_dis = max(dis_array)
+  min_dis = min(dis_array)
+  if max_dis == min_dis:
+    return np.ones((len(dis_array)))
+  else:
+    dis_array = para/10 /(min_dis-max_dis) * (dis_array - min_dis) + 1
+    return dis_array
+
 if __name__ == '__main__':
   main()
 
