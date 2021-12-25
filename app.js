@@ -394,7 +394,7 @@ app.get("/recommend:user_id", (req, res) => {
 		if (err) console.log(err);
 		else console.log(results);
 	})
-	const json_data = require('./test.json');
+	let json_data = require('./test.json');
 	console.log(json_data);
 	res.send(json_data);
 	return 0;

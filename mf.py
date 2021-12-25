@@ -92,13 +92,13 @@ def main():
     # sample_res_to_dict = json.loads(sample_res)
     sample_user_to_dict = json.loads(sample_user)
     user_url = requests.get(
-        "https://15.165.204.148:8080/userAll", verify=False)
+        "https://13.209.75.222:8080/userAll", verify=False)
     user_text = user_url.text
     sample_user_to_dict = json.loads(user_text)
 
     # sample_review_to_dict = json.loads(sample_review)
     review_url = requests.get(
-        "https://15.165.204.148:8080/reviewAll", verify=False)
+        "https://13.209.75.222:8080/reviewAll", verify=False)
     review_text = review_url.text
     sample_review_to_dict = json.loads(review_text)
 
@@ -306,7 +306,7 @@ def main():
 
     # 식당까지의 거리를 이용한 점수 계산
     location_url = requests.get(
-        "https://15.165.204.148:8080/mapAll"+str(id_input), verify=False)
+        "https://13.209.75.222:8080/mapAll"+str(id_input), verify=False)
     location_text = location_url.text
     sample_location_to_dict = json.loads(location_text)
     if debug == 1:
