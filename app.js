@@ -359,24 +359,25 @@ app.get("/map:user_id/:market_id", async (req, res) => {
 	return 0;
 });
 
-app.get("/map:user_id/marketAll", async (req, res) => {
+app.get("/mapAll:user_id", async (req, res) => {
 	let user_id = req.params.user_id;
 	let user_local = await userSearch(user_id);
 
 	let market_name;
 	let localfull;
 	
-	let result;
+	let result = [];
 
 	for(let i = 0; i < 111; i++)
 	{
 	market_name = await marketSearch(i);
 	localfull = await kakaodata(user_local, market_name);
-
-	result.append(await{
+	console.log(i);
+	await result.push({
 		"user" : user_local,
 		"market" : [parseFloat(localfull.data.documents[0].address.y), parseFloat(localfull.data.documents[0].address.x)]
 	});
+	console.log(result);
 	}
 	res.send(result);
 	return 0;
