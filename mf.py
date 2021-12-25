@@ -26,7 +26,7 @@ if len(sys.argv) >= 3:
 
 def main():
     res_url = requests.get(
-        "https://15.165.204.148:8080/marketAll", verify=False)
+        "https://13.209.75.222:8080/marketAll", verify=False)
     res_text = res_url.text
     sample_res_to_dict = json.loads(res_text)
     sample_user = '''[{
