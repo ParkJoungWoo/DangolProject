@@ -343,6 +343,7 @@ async function kakaodata(user_local, market_name, callback) {
 	};
 	return await axios.get(options.url, { headers : options.headers });
 };
+//식당과 사용자 위치 데이터
 app.get("/map:user_id/:market_id", async (req, res) => {
 	let user_id = req.params.user_id;
 	let market_id = req.params.market_id;
@@ -358,7 +359,7 @@ app.get("/map:user_id/:market_id", async (req, res) => {
 	res.send(result);
 	return 0;
 });
-
+//모든 식당과 사용자 위치 데이터
 app.get("/mapAll:user_id", async (req, res) => {
 	let user_id = req.params.user_id;
 	let user_local = await userSearch(user_id);
@@ -380,6 +381,13 @@ app.get("/mapAll:user_id", async (req, res) => {
 	console.log(result);
 	}
 	res.send(result);
+	return 0;
+});
+//추천 데이터 리턴
+app.get("/recommend", (req, res) => {
+	const json_data = requires('./test.json');
+	console.log(json_data);
+	res.send(json_data);
 	return 0;
 });
 module.exports = app;
