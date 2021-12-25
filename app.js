@@ -398,7 +398,7 @@ app.get("/recommend:user_id", (req, res) => {
 	let dataBuffer = fs.readFileSync('./test.json');
 	let json_data = dataBuffer.toString()
 	console.log(json_data);
-	res.send(json_data);
+	res.send(JSON.parse(json_data));
 	return 0;
 });
 module.exports = app;
