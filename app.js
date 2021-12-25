@@ -8,6 +8,7 @@ const sequelize = require("./models").sequelize;
 const cors = require('cors');
 const axios = require('axios');
 const shell = require('python-shell');
+const fs = require('fs');
 
 require("dotenv").config();
 sequelize.sync();
@@ -394,9 +395,10 @@ app.get("/recommend:user_id", (req, res) => {
 		if (err) console.log(err);
 		else console.log(results);
 	})
-	let json_data = require('./test.json');
+	let dataBuffer = fs.readFileSync('./test.json');
+	let json_data = dataBuffer.toString()
 	console.log(json_data);
-	res.json(json_data);
+	res.send(json_data);
 	return 0;
 });
 module.exports = app;
