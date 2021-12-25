@@ -4,9 +4,10 @@ const express = require("express");
 const app = express();
 const model = require("./models");
 const sequelize = require("./models").sequelize;
-const request = require('request');
+//const request = require('request');
 const cors = require('cors');
 const axios = require('axios');
+let exec = require('child_process').exec, child;
 
 require("dotenv").config();
 sequelize.sync();
@@ -384,7 +385,10 @@ app.get("/mapAll:user_id", async (req, res) => {
 	return 0;
 });
 //추천 데이터 리턴
-app.get("/recommend", (req, res) => {
+app.get("/recommend:user_id", (req, res) => {
+	let user_id = req.params.user_id;
+	child = exec(`python3 mf.py ${user_id}`);
+	child();
 	const json_data = requires('./test.json');
 	console.log(json_data);
 	res.send(json_data);
