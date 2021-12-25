@@ -390,13 +390,13 @@ app.get("/recommend:user_id", (req, res) => {
 	let option = {
 		args: user_id
 	};
-	shell.PythonShell.run('mf.py', option, (err ,results) =>{
+	shell.PythonShell.run('recommend.py', option, (err ,results) =>{
 		if (err) console.log(err);
 		else console.log(results);
 	})
 	let json_data = require('./test.json');
 	console.log(json_data);
-	res.send(json_data);
+	res.json(json_data);
 	return 0;
 });
 module.exports = app;
