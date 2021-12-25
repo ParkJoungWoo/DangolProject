@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
-
-import json
-import requests
-import numpy as np
-import pandas as pd
 import sys
 import copy
 import math
+import json
+import requests
+
+import numpy as np
+import pandas as pd
 import urllib3
 import scipy
 import scipy.sparse
@@ -18,10 +18,10 @@ from sklearn.metrics.pairwise import cosine_similarity  # 코사인 유사도
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
-debug = 0
-id_input = int(sys.argv[1])
+DEBUG = 0
+ID_INPUT = int(sys.argv[1])
 if len(sys.argv) >= 3:
-    debug = int(sys.argv[2])
+    DEBUG = int(sys.argv[2])
 
 
 def main():
@@ -30,20 +30,20 @@ def main():
     res_text = res_url.text
     sample_res_to_dict = json.loads(res_text)
     sample_user = '''[{
-        "user_id" : 0,
-        "name" : "박상연",
-        "tag_list" : [2,5,10],
-        "like_list": [3, 20 ,28, 50]
-    },{
-        "user_id" : 1,
-        "name" : "김희원",
-        "tag_list" : [1,14,18],
-        "like_list": [1, 40 ,61, 70]
-    },{
-        "user_id" : 2,
-        "name" : "박정우",
-        "tag_list" : [0,4,13],
-        "like_list": [5, 14, 28]
+            "user_id" : 0,
+            "name" : "박상연",
+            "tag_list" : [2,5,10],
+            "like_list": [3, 20 ,28, 50]
+        },{
+            "user_id" : 1,
+            "name" : "김희원",
+            "tag_list" : [1,14,18],
+            "like_list": [1, 40 ,61, 70]
+        },{
+            "user_id" : 2,
+            "name" : "박정우",
+            "tag_list" : [0,4,13],
+            "like_list": [5, 14, 28]
     }]'''
 
     sample_review = '''[{
@@ -52,36 +52,36 @@ def main():
           "user_id" : 0,
           "star_num" : 4,
           "content" : "abc"
-      },{
+        },{
           "index" : 1,
           "market_id" : 34,
           "user_id" : 2,
           "star_num" : 5
-      },{
+        },{
           "index" : 2,
           "market_id" : 28,
           "user_id" : 1,
           "star_num" : 3,
           "content" : "abc"
-      },{
+        },{
           "index" : 3,
           "market_id" : 28,
           "user_id" : 0,
           "star_num" : 5,
           "content" : "abc"
-      },{
+        },{
           "index" : 4,
           "market_id" : 28,
           "user_id" : 2,
           "star_num" : 3,
           "content" : "abc"
-      },{
+        },{
           "index" : 5,
           "market_id" : 80,
           "user_id" : 1,
           "star_num" : 4,
           "content" : "abc"
-      },{
+        },{
           "index" : 6,
           "market_id" : 80,
           "user_id" : 0,
@@ -102,7 +102,7 @@ def main():
     review_text = review_url.text
     sample_review_to_dict = json.loads(review_text)
 
-    if debug == 1:
+    if DEBUG == 1:
         print("sample of users")
         print(sample_user)
         print("make sample of user to dictionary")
@@ -125,7 +125,7 @@ def main():
             temp.append(res)
             temp.append(5)
             train_data.append(temp)
-    if debug == 1:
+    if DEBUG == 1:
         print("who give star to where")
         print(train_data)
         print()
@@ -138,14 +138,14 @@ def main():
             train_data_to_pd.columns[2]: 'rating'
             })
 
-    if debug == 1:
+    if DEBUG == 1:
         print("train_data_to_pd")
         print(train_data_to_pd)
         print()
     user_res_rating = train_data_to_pd.pivot_table(
         'rating', index='user', columns='restaurant'
         ).fillna(0)
-    if debug == 1:
+    if DEBUG == 1:
         print("user restaurant rating")
         print(user_res_rating)
         print()
@@ -157,7 +157,7 @@ def main():
         user_id_set.add(user['user_id'])
     user_id_list = list(user_id_set)
     user_id_list.sort()
-    if debug == 1:
+    if DEBUG == 1:
         print("user id set")
         print(user_id_set)
         print("user id list")
@@ -168,7 +168,7 @@ def main():
     for i in range(len(train_data)):
         matrix[user_id_list.index(train_data[i][0])][train_data[i][1]] \
             = train_data[i][2]
-    if debug == 1:
+    if DEBUG == 1:
         print("matrix")
         print(matrix)
         print()
@@ -179,19 +179,19 @@ def main():
 
     if version == 0:
         matrix_mean = np.true_divide(matrix.sum(1), (matrix != 0).sum(1))
-        if debug == 1:
+        if DEBUG == 1:
             print("matrix mean")
             print(matrix_mean)
             print()
         matrix_user_mean = matrix - matrix_mean.reshape(-1, 1)
     elif version == 1:
         user_res_rating_mean = np.mean(matrix, axis=1)
-        if debug == 1:
+        if DEBUG == 1:
             print("user_res_rating_mean")
             print(user_res_rating_mean)
             print()
         matrix_user_mean = matrix - user_res_rating_mean.reshape(-1, 1)
-    if debug == 1:
+    if DEBUG == 1:
         print("matrix_user_mean")
         print(matrix_user_mean)
         print()
@@ -199,7 +199,7 @@ def main():
     U, sigma, Vt = scipy.sparse.linalg.svds(
         matrix_user_mean,
         k=min(len(user_id_list), len(sample_res_to_dict))-1)
-    if debug == 1:
+    if DEBUG == 1:
         print("shape of U, sigma, Vt")
         print(U.shape, sigma.shape, Vt.shape)
         print()
@@ -208,7 +208,7 @@ def main():
 
     svd_user_predicted_ratings = np.dot(np.dot(U, sigma), Vt)
     + user_res_rating_mean.reshape(-1, 1)
-    if debug == 1:
+    if DEBUG == 1:
         print("svd_user_predicted_ratings")
         print(svd_user_predicted_ratings)
         print()
@@ -222,15 +222,15 @@ def main():
         columns=id_list,
         index=user_id_list)
 
-    if debug == 1:
+    if DEBUG == 1:
         print("svd_predict_df")
         print(svd_predict_df)
         print()
     score_mf = []
     score_mf.append(svd_predict_df.columns)
-    score_mf.append(svd_predict_df.loc[id_input])
+    score_mf.append(svd_predict_df.loc[ID_INPUT])
     score_mf = np.array(score_mf)
-    if debug == 1:
+    if DEBUG == 1:
         print("score using MF")
         print(score_mf)
         print()
@@ -241,7 +241,7 @@ def main():
         temp.append(sample_res_to_dict[i]['id'])
         temp.append(' '.join(sample_res_to_dict[i]['foodtag']))
         tag_array.append(temp)
-    if debug == 1:
+    if DEBUG == 1:
         print("tag array")
         print(tag_array)
         print()
@@ -250,7 +250,7 @@ def main():
         np.array(tag_array).T[1],
         index=np.array(tag_array).T[0],
         columns=['cate'])
-    if debug == 1:
+    if DEBUG == 1:
         print("tag dataframe")
         print(tag_df)
         print()
@@ -260,7 +260,7 @@ def main():
     place_simi_cate = cosine_similarity(place_category, place_category)
     place_simi_cate_sorted_ind = place_simi_cate.argsort()[:, ::-1]
 
-    if debug == 1:
+    if DEBUG == 1:
         print("place simi category")
         print(place_simi_cate)
         print()
@@ -269,7 +269,7 @@ def main():
 
     how_do_you_review = []
     for i in range(len(sample_review_to_dict)):
-        if sample_review_to_dict[i]['user_id'] == id_input:
+        if sample_review_to_dict[i]['user_id'] == ID_INPUT:
             how_do_you_review.append(
                 [
                     sample_review_to_dict[i]['market_id'],
@@ -282,7 +282,7 @@ def main():
 
     # 유저의 취향과 위치를 얻어냄
     for user in sample_user_to_dict:
-        if id_input == user['user_id']:
+        if ID_INPUT == user['user_id']:
             user_tag = user['tag_list']
             break
 
@@ -299,22 +299,22 @@ def main():
 
     if max(score_tag) > 0:
         score_tag = score_tag/max(score_tag)
-    if debug == 1:
+    if DEBUG == 1:
         print("score using tag")
         print(score_tag)
         print()
 
     # 식당까지의 거리를 이용한 점수 계산
     location_url = requests.get(
-        "https://13.209.75.222:8080/mapAll"+str(id_input), verify=False)
+        "https://13.209.75.222:8080/mapAll"+str(ID_INPUT), verify=False)
     location_text = location_url.text
     sample_location_to_dict = json.loads(location_text)
-    if debug == 1:
+    if DEBUG == 1:
         print("sample location to dict")
         print(sample_location_to_dict)
         print()
     user_location = sample_location_to_dict[0]["user"]
-    if debug == 1:
+    if DEBUG == 1:
         print("user location")
         print(user_location)
         print()
@@ -329,52 +329,52 @@ def main():
                     + pow(user_location[1]-res_location[1], 2))
         if not np.all((score_loc == 0)):
             score_loc = distance_score(score_loc)
-        if debug == 1:
+        if DEBUG == 1:
             print("score location")
             print(score_loc)
     else:
         score_loc = np.zeros((len(sample_res_to_dict)))
-        if debug == 1:
+        if DEBUG == 1:
             print("score location")
             print(score_loc)
 
     if len(how_do_you_review) != 0:
         score_cs = score_cs/len(how_do_you_review)
         score_cs = (score_cs-min(score_cs))/(max(score_cs)-min(score_cs))
-        if debug == 1:
+        if DEBUG == 1:
             print("score using CS")
             print(score_cs)
             print()
         score_final = copy.deepcopy(score_mf)
         score_final[1] = (
-            score_tag*10
-            + score_loc*10
+            score_tag*35
+            + score_loc*15
             + (score_mf[1]/max(abs(score_mf[1]))+1)/2*25
-            + score_cs/max(score_cs)*55)
+            + score_cs/max(score_cs)*25)
     else:
         score_final = copy.deepcopy(score_mf)
         score_final[1] = (
-            score_tag*30
+            score_tag*50
             + score_loc*20
-            + (score_mf[1]/max(abs(score_mf[1]))+1)/2*50)
+            + (score_mf[1]/max(abs(score_mf[1]))+1)/2*30)
 
     score_final = pd.DataFrame(score_final)
     header = score_final.iloc[0]
     header = header.astype(int)
     score_final = score_final[1:]
     score_final.rename(columns=header, inplace=True)
-    if debug == 1:
+    if DEBUG == 1:
         print("***********score_final**********")
         print(score_final)
         print()
     final_recommend = recommend_restaurants(
-        score_final, id_input, user_res_rating, 9)
+        score_final, ID_INPUT, user_res_rating, 9)
 
     with open('test.json', 'w') as f:
         f.write(final_recommend)
     # with open('test.json', 'w') as outfile:
     # json.dump(final_recommend, outfile)
-    if debug == 1:
+    if DEBUG == 1:
         print("final recommend")
         print(final_recommend)
     return final_recommend
@@ -383,7 +383,7 @@ def main():
 def recommend_restaurants(score_final, user_id, user_res_rating, num_row=5):
     score_row = score_final.loc[1].sort_values(ascending=False)
     already_ate = user_res_rating.loc[user_id]
-    if debug == 1:
+    if DEBUG == 1:
         print("score row sorted")
         print(score_row)
         print("already ate")
