@@ -8,6 +8,7 @@ const sequelize = require("./models").sequelize;
 const cors = require('cors');
 const axios = require('axios');
 let exec = require('child_process').exec, child;
+const shell = require('shelljs');
 
 require("dotenv").config();
 sequelize.sync();
@@ -387,8 +388,7 @@ app.get("/mapAll:user_id", async (req, res) => {
 //추천 데이터 리턴
 app.get("/recommend:user_id", (req, res) => {
 	let user_id = req.params.user_id;
-	child = exec(`python3 mf.py ${user_id}`);
-	child();
+	shell.exec(`python3 mf.py ${user_id}`);
 	const json_data = requires('./test.json');
 	console.log(json_data);
 	res.send(json_data);
