@@ -385,18 +385,25 @@ app.get("/mapAll:user_id", async (req, res) => {
 	res.send(result);
 	return 0;
 });
-//추천 데이터 리턴
-app.get("/recommend:user_id", (req, res) => {
-	let user_id = req.params.user_id;
+async function recommend(user_id){
 	let option = {
 		args: user_id
 	};
-	shell.PythonShell.run('recommend.py', option, (err ,results) =>{
+	let dataBuffer;
+	await shell.PythonShell.run('recommend.py', option, (err ,results) =>{
 		if (err) console.log(err);
 		else console.log(results);
-	})
-	let dataBuffer = fs.readFileSync('./test.json');
-	let json_data = dataBuffer.toString()
+	});
+	dataBuffer = await fs.readFileSync('./test.json');
+	
+
+	return dataBuffer.toString();
+}
+//추천 데이터 리턴
+app.get("/recommend:user_id", async (req, res) => {
+	let user_id = req.params.user_id;
+	let json_data = await recommend(user_id);
+	
 	console.log(json_data);
 	res.send(JSON.parse(json_data));
 	return 0;
