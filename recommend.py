@@ -276,11 +276,12 @@ def main():
                     sample_review_to_dict[i]['star_num']-3
                 ])
 
-    score_cs = np.zeros((len(sample_res_to_dict)))
+    score_cs = np.zeros((len(sample_res_to_dict)), dtype=float)
     for element in how_do_you_review:
         score_cs += place_simi_cate[element[0]]*element[1]/2
 
     # 유저의 취향과 위치를 얻어냄
+    user_tag = []
     for user in sample_user_to_dict:
         if ID_INPUT == user['user_id']:
             user_tag = user['tag_list']
@@ -288,7 +289,7 @@ def main():
 
     # 유저의 취향을 이용한 점수 계산
     if user_tag:
-        score_tag = np.zeros((len(sample_res_to_dict)))
+        score_tag = np.zeros((len(sample_res_to_dict)), dtype=float)
         for i in range(len(sample_res_to_dict)):
             for tag in user_tag:
                 if tag in sample_res_to_dict[i]['foodtag']:
@@ -320,7 +321,7 @@ def main():
         print()
 
     if user_location:
-        score_loc = np.zeros((len(sample_location_to_dict)))
+        score_loc = np.zeros((len(sample_location_to_dict)), dtype=float)
         for i in range(len(sample_location_to_dict)):
             res_location = sample_location_to_dict[i]['market']
             if res_location:
@@ -347,9 +348,9 @@ def main():
             print()
         score_final = copy.deepcopy(score_mf)
         score_final[1] = (
-            score_tag*35
+            score_tag*20
             + score_loc*15
-            + (score_mf[1]/max(abs(score_mf[1]))+1)/2*25
+            + (score_mf[1]/max(abs(score_mf[1]))+1)/2*40
             + score_cs/max(score_cs)*25)
     else:
         score_final = copy.deepcopy(score_mf)
@@ -368,7 +369,7 @@ def main():
         print(score_final)
         print()
     final_recommend = recommend_restaurants(
-        score_final, ID_INPUT, user_res_rating, 9)
+        score_final, ID_INPUT, user_res_rating, how_do_you_review, 3)
 
     with open('test.json', 'w') as f:
         f.write(final_recommend)
@@ -380,18 +381,21 @@ def main():
     return final_recommend
 
 
-def recommend_restaurants(score_final, user_id, user_res_rating, num_row=5):
+def recommend_restaurants(score_final, user_id, user_res_rating, how_do_you_review, num_row=5):
     score_row = score_final.loc[1].sort_values(ascending=False)
-    already_ate = user_res_rating.loc[user_id]
+    already_ate = []
+    if how_do_you_review:
+        already_ate = user_res_rating.loc[user_id]
     if DEBUG == 1:
         print("score row sorted")
         print(score_row)
         print("already ate")
         print(already_ate)
         print()
-    for a, b in already_ate.items():
-        if b != 0:
-            score_row = score_row.drop(a)
+    if len(already_ate) >= 1:
+        for a, b in already_ate.items():
+            if b != 0:
+                score_row = score_row.drop(a)
 
     count = 0
     for a, b in score_row.items():
