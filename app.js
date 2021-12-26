@@ -375,25 +375,24 @@ app.get("/mapAll:user_id", async (req, res) => {
 	{
 	market_name = await marketSearch(i);
 	localfull = await kakaodata(user_local, market_name);
-	console.log(i);
 	await result.push({
 		"user" : user_local,
 		"market" : [parseFloat(localfull.data.documents[0].address.y), parseFloat(localfull.data.documents[0].address.x)]
 	});
-	console.log(result);
 	}
 	res.send(result);
 	return 0;
 });
+//추천 함수
 async function recommend(user_id){
 	let option = {
 		args: user_id
 	};
 	let dataBuffer;
-	await shell.PythonShell.run('recommend.py', option, (err ,results) =>{
-		if (err) console.log(err);
-		else console.log(results);
-	});
+	// await shell.PythonShell.run('recommend.py', option, (err ,results) =>{
+	// 	if (err) console.log(err);
+	// 	else console.log(results);
+	// });
 	dataBuffer = await fs.readFileSync('./test.json');
 	
 

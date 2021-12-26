@@ -26,7 +26,7 @@ if len(sys.argv) >= 3:
 
 def main():
     res_url = requests.get(
-        "https://3.34.197.183:8080/marketAll", verify=False)
+        "https://52.78.221.99:8080/marketAll", verify=False)
     res_text = res_url.text
     sample_res_to_dict = json.loads(res_text)
     sample_user = '''[{
@@ -92,13 +92,13 @@ def main():
     # sample_res_to_dict = json.loads(sample_res)
     sample_user_to_dict = json.loads(sample_user)
     user_url = requests.get(
-        "https://3.34.197.183:8080/userAll", verify=False)
+        "https://52.78.221.99:8080/userAll", verify=False)
     user_text = user_url.text
     sample_user_to_dict = json.loads(user_text)
 
     # sample_review_to_dict = json.loads(sample_review)
     review_url = requests.get(
-        "https://3.34.197.183:8080/reviewAll", verify=False)
+        "https://52.78.221.99:8080/reviewAll", verify=False)
     review_text = review_url.text
     sample_review_to_dict = json.loads(review_text)
 
@@ -307,7 +307,7 @@ def main():
 
     # 식당까지의 거리를 이용한 점수 계산
     location_url = requests.get(
-        "https://3.34.197.183:8080/mapAll"+str(ID_INPUT), verify=False)
+        "https://52.78.221.99:8080/mapAll"+str(ID_INPUT), verify=False)
     location_text = location_url.text
     sample_location_to_dict = json.loads(location_text)
     if DEBUG == 1:
