@@ -9,6 +9,7 @@ const cors = require('cors');
 const axios = require('axios');
 const shell = require('python-shell');
 const fs = require('fs');
+const {spawn} = require('child_process');
 
 require("dotenv").config();
 sequelize.sync();
@@ -389,6 +390,18 @@ async function recommend(user_id){
 		args: user_id
 	};
 	let dataBuffer;
+	let dataRec
+	const python = spawn('python3', ['recommend.py', user_id]);
+	await python.stdout.on('data', (data) => {
+		dataRec = data.toString();
+		console.log(dataRec);
+	});
+		console.log(dataRec);
+	/*
+	python.on('close', (code) => {
+		res.send(dataToSend);
+	})
+	*/
 	// await shell.PythonShell.run('recommend.py', option, (err ,results) =>{
 	// 	if (err) console.log(err);
 	// 	else console.log(results);
@@ -405,6 +418,7 @@ app.get("/recommend:user_id", async (req, res) => {
 	
 	console.log(json_data);
 	res.send(JSON.parse(json_data));
+	
 	return 0;
 });
 module.exports = app;
