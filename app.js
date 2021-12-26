@@ -386,9 +386,6 @@ app.get("/mapAll:user_id", async (req, res) => {
 });
 //추천 함수
 async function recommend(user_id){
-	let option = {
-		args: user_id
-	};
 	let dataBuffer;
 	let dataRec
 	const python = spawn('python3', ['recommend.py', user_id]);
@@ -397,18 +394,7 @@ async function recommend(user_id){
 		console.log(dataRec);
 	});
 		console.log(dataRec);
-	/*
-	python.on('close', (code) => {
-		res.send(dataToSend);
-	})
-	*/
-	// await shell.PythonShell.run('recommend.py', option, (err ,results) =>{
-	// 	if (err) console.log(err);
-	// 	else console.log(results);
-	// });
 	dataBuffer = await fs.readFileSync('./test.json');
-	
-
 	return dataBuffer.toString();
 }
 //추천 데이터 리턴
