@@ -452,4 +452,24 @@ app.put("/pos:market_id/edit", (req, res) => {
 		console.log(err);
 	});
 });
+app.get("/posUpdate", (req, res) => {
+	for(let i = 0; i < 111; i++)
+	{
+	model.Pos.findOne({
+		where : {
+			"market_id": market_id
+		}
+	}).then(result => {
+		model.Market.update({
+			"seatnum": result.now_seat,
+		}, {
+			where: {
+				"market_id": market_id
+			}
+		});
+	}).catch(err => {
+		console.log(err);
+	});
+	}
+});
 module.exports = app;
