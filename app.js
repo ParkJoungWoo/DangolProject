@@ -407,4 +407,49 @@ app.get("/recommend:user_id", async (req, res) => {
 	
 	return 0;
 });
+//Pos기 데이터 입력
+app.post("/fetchPos", (req, res) => {
+	for (let i = 0; i < req.body.length; i++)
+		model.Pos.create({
+			"market_id": req.body[i].market_id,
+			"total_seat": req.body[i].total_seat,
+			"now_seat": req.body[i].now_seat
+		});
+	res.send("입력완료");
+});
+//Pos기 데이터 받기
+app.get("/posAll", (req, res) => {
+	model.Pos.findAll({
+		where: {}
+	}).then(result => {
+		res.send(result);
+		return result;
+	}).catch(err => {
+		console.log(err);
+	});
+});
+//Pos기 데이터 수정
+app.put("/pos:market_id/edit", (req, res) => {
+	let market_id = req.params.market_id;
+	model.Pos.update({
+		"total_seat": req.body.total_seat,
+		"now_seat": req.body.now_seat
+	}, {
+		where: {
+			"market_id": market_id
+		}
+	}).then(result => {
+		model.Market.update({
+			"seatnum" : req.body.now_seat
+		},{
+			where : {
+				"market_id": market_id
+			}
+		});
+		res.json(result);
+		return result;
+	}).catch(err => {
+		console.log(err);
+	});
+});
 module.exports = app;
